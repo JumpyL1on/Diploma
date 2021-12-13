@@ -1,0 +1,18 @@
+﻿@page "/team/{id:guid}/join"
+@using Frontend.Application.Features.CreateTeamMember
+@using Frontend.Application.Features.RefreshJWT
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+    [Inject]
+    public IMediator Mediator { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Mediator.Send(new CreateTeamMemberCommand { Id = Id });
+        await Mediator.Send(new RefreshJWTCommand());
+        NavigationManager.NavigateTo($"team/{Id}");
+    }
+}

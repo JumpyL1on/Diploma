@@ -1,0 +1,14 @@
+@inherits LayoutComponentBase
+<MudSnackbarProvider/>
+<MudDialogProvider CloseButton="@true"/>
+<MudThemeProvider/>
+<MudLayout>
+    <AuthorizeView>
+        <Authorized><NavBar/></Authorized>
+    </AuthorizeView>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer Class="mt-6">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

@@ -1,0 +1,16 @@
+﻿@page "/account/logout"
+@using Frontend.Application.Features.Logout
+@attribute [AllowAnonymous]
+@code
+{
+    [Inject]
+    public IMediator Mediator { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Mediator.Send(new LogoutCommand());
+        NavigationManager.NavigateTo("/", true);
+    }
+}
