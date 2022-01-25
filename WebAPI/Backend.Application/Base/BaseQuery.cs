@@ -1,9 +1,8 @@
 ﻿using Backend.Core.Entities;
 
-namespace Backend.Application.Base
+namespace Backend.Application.Base;
+
+public abstract class BaseQuery
 {
-    public abstract class BaseQuery
-    {
-        public AppUser AppUser { get; set; }
-    }
+    public AppUser AppUser { get; set; }
 }

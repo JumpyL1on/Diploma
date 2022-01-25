@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Frontend.Application.Base;
@@ -12,8 +13,9 @@ internal class CreateTournamentCommandHandler : BaseHandler, IRequestHandler<Cre
     {
     }
 
-    public Task<Unit> Handle(CreateTournamentCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(CreateTournamentCommand request, CancellationToken cancellationToken)
     {
-        throw new System.NotImplementedException();
+        await HttpClient.PostAsJsonAsync("tournaments", request, cancellationToken);
+        return Unit.Value;
     }
 }

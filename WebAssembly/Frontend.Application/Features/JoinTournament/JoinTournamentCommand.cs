@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Frontend.Application.Features.JoinTournament
 {
-    public class JoinTournamentCommand : IRequest<Unit>
+    public class JoinTournamentCommand : IRequest
     {
         public Guid TournamentId { get; set; }
     }

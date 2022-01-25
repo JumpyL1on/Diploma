@@ -2,13 +2,12 @@
 using Backend.Application.DTOs;
 using Backend.Core.Entities;
 
-namespace Backend.Application.Profiles
+namespace Backend.Application.Profiles;
+
+public class AppUserProfile : Profile
 {
-    public class AppUserProfile : Profile
+    public AppUserProfile()
     {
-        public AppUserProfile()
-        {
-            CreateMap<AppUser, AppUserDTO>();
-        }
+        CreateMap<AppUser, AppUserDTO>();
     }
 }

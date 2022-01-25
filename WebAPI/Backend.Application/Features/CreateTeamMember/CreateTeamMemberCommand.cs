@@ -2,10 +2,9 @@
 using Backend.Application.Base;
 using MediatR;
 
-namespace Backend.Application.Features.CreateTeamMember
+namespace Backend.Application.Features.CreateTeamMember;
+
+public record CreateTeamMemberCommand : BaseCommand, IRequest<CreateTeamMemberResponse>
 {
-    public record CreateTeamMemberCommand : BaseCommand, IRequest<CreateTeamMemberResponse>
-    {
-        public Guid TeamId { get; set; }
-    }
+    public Guid TeamId { get; set; }
 }

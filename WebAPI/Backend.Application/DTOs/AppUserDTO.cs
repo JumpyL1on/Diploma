@@ -1,9 +1,8 @@
-﻿namespace Backend.Application.DTOs
+﻿namespace Backend.Application.DTOs;
+
+public class AppUserDTO
 {
-    public class AppUserDTO
-    {
-        public string UserName { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-    }
+    public string UserName { get; set; }
+    public string Name { get; set; }
+    public string Surname { get; set; }
 }

@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Backend.Application.Base
+namespace Backend.Application.Base;
+
+public abstract class BaseDTO
 {
-    public abstract class BaseDTO
-    {
-        public Guid Id { get; set; }
-    }
+    public Guid Id { get; set; }
 }

@@ -1,10 +1,9 @@
 ﻿using MediatR;
 
-namespace Backend.Application.Features.Account.Login
+namespace Backend.Application.Features.Account.Login;
+
+public class LoginCommand : IRequest<LoginResult>
 {
-    public class LoginCommand : IRequest<LoginResult>
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
+    public string Email { get; set; }
+    public string Password { get; set; }
 }

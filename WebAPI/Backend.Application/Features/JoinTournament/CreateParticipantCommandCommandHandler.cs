@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Application.Features.JoinTournament;
 
-internal class CreateParticipantCommandHandler : BaseHandler, IRequestHandler<CreateParticipantCommand, Unit>
+internal class CreateParticipantCommandCommandHandler : BaseCommandHandler, IRequestHandler<CreateParticipantCommand, Unit>
 {
-    public CreateParticipantCommandHandler(DbContext dbContext) : base(dbContext)
+    public CreateParticipantCommandCommandHandler(DbContext dbContext) : base(dbContext)
     {
     }
 
@@ -18,8 +18,13 @@ internal class CreateParticipantCommandHandler : BaseHandler, IRequestHandler<Cr
         var teamMember = await DbContext
             .Set<TeamMember>()
             .SingleOrDefaultAsync(member => member.AppUserId == request.AppUser.Id, cancellationToken);
-        var participant = new Participant(teamMember.Id, request.TournamentId);
+        var participant = new Participant(teamMember.TeamId, request.TournamentId);
         DbContext.Entry(participant).State = EntityState.Added;
+        await DbContext.SaveChangesAsync(cancellationToken);
+        var tournament = await DbContext
+            .Set<Tournament>()
+            .FindAsync(new object[] { request.TournamentId }, cancellationToken);
+        tournament?.JoinParticipant();
         await DbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }

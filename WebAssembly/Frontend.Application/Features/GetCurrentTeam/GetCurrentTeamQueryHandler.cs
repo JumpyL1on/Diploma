@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Frontend.Application.Base;
 using Frontend.Domain.Entities;
-using Frontend.Domain.ValueObjects;
 using MediatR;
 
 namespace Frontend.Application.Features.GetTeamById

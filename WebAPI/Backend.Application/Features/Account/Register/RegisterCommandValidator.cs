@@ -1,14 +1,13 @@
 ﻿using FluentValidation;
 
-namespace Backend.Application.Features.Account.Register
+namespace Backend.Application.Features.Account.Register;
+
+public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
-    public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
+    public RegisterCommandValidator()
     {
-        public RegisterCommandValidator()
-        {
-            RuleFor(command => command.Email).EmailAddress();
-            RuleFor(command => command.Password).NotNull();
-            RuleFor(command => command.ConfirmPassword).Equal(command => command.Password);
-        }
+        RuleFor(command => command.Email).EmailAddress();
+        RuleFor(command => command.Password).NotNull();
+        RuleFor(command => command.ConfirmPassword).Equal(command => command.Password);
     }
 }

@@ -8,5 +8,7 @@ namespace Frontend.Domain.ValueObjects
         public string Title { get; set; }
         public Status Status { get; set; }
         public DateTime RegistrationEnd { get; set; }
+        public int CurrentParticipantsNumber { get; set; }
+        public int MaxParticipantsNumber { get; set; }
     }
 }

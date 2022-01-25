@@ -17,7 +17,7 @@ namespace Backend.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -99,6 +99,47 @@ namespace Backend.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Backend.Core.Entities.Match", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ParticipantAId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ParticipantAScore")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ParticipantBId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ParticipantBScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TournamentId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParticipantAId");
+
+                    b.HasIndex("ParticipantBId");
+
+                    b.HasIndex("TournamentId");
+
+                    b.ToTable("Matches");
+                });
+
             modelBuilder.Entity("Backend.Core.Entities.Participant", b =>
                 {
                     b.Property<Guid>("Id")
@@ -170,8 +211,14 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<DateTime>("Creation")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("CurrentParticipantsNumber")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("End")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("MaxParticipantsNumber")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("RegistrationEnd")
                         .HasColumnType("timestamp without time zone");
@@ -182,11 +229,11 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<DateTime>("Start")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Title")
                         .HasColumnType("text");
+
+                    b.Property<int>("TournamentStatus")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -255,6 +302,29 @@ namespace Backend.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.Match", b =>
+                {
+                    b.HasOne("Backend.Core.Entities.Participant", "ParticipantA")
+                        .WithMany()
+                        .HasForeignKey("ParticipantAId");
+
+                    b.HasOne("Backend.Core.Entities.Participant", "ParticipantB")
+                        .WithMany()
+                        .HasForeignKey("ParticipantBId");
+
+                    b.HasOne("Backend.Core.Entities.Tournament", "Tournament")
+                        .WithMany("Matches")
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParticipantA");
+
+                    b.Navigation("ParticipantB");
+
+                    b.Navigation("Tournament");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Participant", b =>
@@ -329,6 +399,8 @@ namespace Backend.Infrastructure.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Tournament", b =>
                 {
+                    b.Navigation("Matches");
+
                     b.Navigation("Participants");
                 });
 #pragma warning restore 612, 618

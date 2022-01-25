@@ -11,7 +11,7 @@
                 </MudCardHeader>
                 <MudCardContent>
                     <MudText Typo="Typo.subtitle1">Статус: @Tournament.Status</MudText>
-                    <MudText Typo="Typo.subtitle1">Формат: </MudText>
+                    <MudText Typo="Typo.subtitle1">Формат: Online</MudText>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -24,7 +24,9 @@
                 </MudCardHeader>
                 <MudCardContent>
                     <MudText Typo="Typo.subtitle1">Регистрация открыта: до @Tournament.RegistrationEnd.ToString("f")</MudText>
-                    <MudText Typo="Typo.subtitle1">Число команд: </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Число команд: @Tournament.CurrentParticipantsNumber из @Tournament.MaxParticipantsNumber
+                    </MudText>
                     <MudText Typo="Typo.subtitle1">Формат участия: 5x5</MudText>
                 </MudCardContent>
                 <MudCardActions>

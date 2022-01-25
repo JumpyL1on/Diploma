@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Backend.Application.Interfaces
+namespace Backend.Application.Interfaces;
+
+public interface IJWTService
 {
-    public interface IJWTService
-    {
-        string CreateToken(IList<Claim> claims);
-        string GenerateRefreshToken();
-        ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
-    }
+    string CreateToken(IList<Claim> claims);
+    string GenerateRefreshToken();
+    ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
 }

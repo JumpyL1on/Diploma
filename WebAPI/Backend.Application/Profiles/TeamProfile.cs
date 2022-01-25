@@ -2,13 +2,12 @@
 using Backend.Application.DTOs;
 using Backend.Core.Entities;
 
-namespace Backend.Application.Profiles
+namespace Backend.Application.Profiles;
+
+public class TeamProfile : Profile
 {
-    public class TeamProfile : Profile
+    public TeamProfile()
     {
-        public TeamProfile()
-        {
-            CreateMap<Team, TeamDTO>();
-        }
+        CreateMap<Team, TeamDTO>();
     }
 }

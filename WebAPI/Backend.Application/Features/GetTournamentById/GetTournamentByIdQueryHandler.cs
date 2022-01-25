@@ -9,22 +9,21 @@ using Backend.Core.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Application.Features.GetTournamentById
-{
-    internal class GetTournamentByIdQueryHandler : BaseQueryHandler,
-        IRequestHandler<GetTournamentByIdQuery, TournamentDTO>
-    {
-        public GetTournamentByIdQueryHandler(DbContext dbContext, IMapper mapper) : base(dbContext, mapper)
-        {
-        }
+namespace Backend.Application.Features.GetTournamentById;
 
-        public async Task<TournamentDTO> Handle(GetTournamentByIdQuery request, CancellationToken cancellationToken)
-        {
-            return await DbContext
-                .Set<Tournament>()
-                .Where(tournament => tournament.Id == request.Id)
-                .ProjectTo<TournamentDTO>(Mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(cancellationToken);
-        }
+internal class GetTournamentByIdQueryHandler : BaseQueryHandler,
+    IRequestHandler<GetTournamentByIdQuery, TournamentDTO>
+{
+    public GetTournamentByIdQueryHandler(DbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    {
+    }
+
+    public async Task<TournamentDTO> Handle(GetTournamentByIdQuery request, CancellationToken cancellationToken)
+    {
+        return await DbContext
+            .Set<Tournament>()
+            .Where(tournament => tournament.Id == request.Id)
+            .ProjectTo<TournamentDTO>(Mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

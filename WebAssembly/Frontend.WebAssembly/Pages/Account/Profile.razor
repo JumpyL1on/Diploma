@@ -1,6 +1,8 @@
 ﻿@page "/account/profile"
+@using Frontend.WebAssembly.Pages.CurrentTournamentDetails
 <MudTabs Border="@true" Rounded="@true" Outlined="@true" Color="Color.Primary" Centered="@true">
     <MudTabPanel Text="Турнир">
+        <CurrentTournamentDetails/>
     </MudTabPanel>
     <MudTabPanel Text="Команда">
         <TeamInfo/>

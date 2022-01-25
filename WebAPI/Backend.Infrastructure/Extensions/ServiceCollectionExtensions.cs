@@ -10,26 +10,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Backend.Infrastructure.Extensions
+namespace Backend.Infrastructure.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDbContext<AppDbContext>(builder =>
-                builder.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-            services
-                .AddIdentityCore<AppUser>(options =>
-                {
-                    options.User.RequireUniqueEmail = true;
-                    options.ClaimsIdentity.UserIdClaimType = "Id";
-                })
-                .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<AppDbContext>();
-            services.AddScoped<DbContext, AppDbContext>();
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-            services.AddTransient<ExceptionHandlingMiddleware>();
-            services.AddScoped<IJWTService, JWTService>();
-        }
+        services.AddDbContext<AppDbContext>(builder =>
+            builder.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        services
+            .AddIdentityCore<AppUser>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.ClaimsIdentity.UserIdClaimType = "Id";
+            })
+            .AddDefaultTokenProviders()
+            .AddEntityFrameworkStores<AppDbContext>();
+        services.AddScoped<DbContext, AppDbContext>();
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+        services.AddTransient<ExceptionHandlingMiddleware>();
+        services.AddScoped<IJWTService, JWTService>();
     }
 }

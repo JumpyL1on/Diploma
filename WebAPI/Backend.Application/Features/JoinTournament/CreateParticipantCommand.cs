@@ -2,10 +2,9 @@
 using Backend.Application.Base;
 using MediatR;
 
-namespace Backend.Application.Features.JoinTournament
+namespace Backend.Application.Features.JoinTournament;
+
+public record CreateParticipantCommand : BaseCommand, IRequest<Unit>
 {
-    public record CreateParticipantCommand : BaseCommand, IRequest<Unit>
-    {
-        public Guid TournamentId { get; set; }
-    }
+    public Guid TournamentId { get; set; }
 }

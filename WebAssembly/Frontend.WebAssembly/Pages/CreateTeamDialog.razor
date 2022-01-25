@@ -9,6 +9,9 @@
                             <MudTextField Label="Название*" Variant="Variant.Outlined" @bind-Value="Request.Title" For="() => Request.Title"/>
                         </MudItem>
                         <MudItem xs="12">
+                            <MudTextField T="@string" Label="Тег*" Variant="Variant.Outlined"/>
+                        </MudItem>
+                        <MudItem xs="12">
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" Style="width: 100%">
                                 Создать команду
                             </MudButton>

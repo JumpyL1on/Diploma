@@ -1,6 +1,4 @@
-﻿using System;
-using Frontend.Domain.Entities;
-using Frontend.Domain.ValueObjects;
+﻿using Frontend.Domain.Entities;
 using MediatR;
 
 namespace Frontend.Application.Features.GetTeamById
