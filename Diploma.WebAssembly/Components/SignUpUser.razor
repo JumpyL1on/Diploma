@@ -1,0 +1,53 @@
+﻿@page "/user/sign-up"
+@attribute [AllowAnonymous]
+<MudForm @ref="@MudForm">
+    <MudCard Class="ma-auto" Style="width: 30%">
+        <MudCardContent>
+            <MudGrid>
+                <MudItem xs="12">
+                    <div class="d-flex justify-center">
+                        <MudText Typo="Typo.h4">Register</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="12">
+                    <div class="d-flex justify-center">
+                        <MudText>Already have an account? <MudLink Href="/user/sign-in">Sign In</MudLink></MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Имя" Variant="Variant.Outlined" @bind-Value="Request.Name"
+                                  Validation="@((string name) => UserValidationService.ValidateName(name))"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Никнейм" Variant="Variant.Outlined" @bind-Value="Request.UserName"
+                                  Validation="@((string userName) => UserValidationService.ValidateUserName(userName))"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Фамилия" Variant="Variant.Outlined" @bind-Value="Request.Surname"
+                                  Validation="@((string surname) => UserValidationService.ValidateSurname(surname))"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="E-mail" Variant="Variant.Outlined" @bind-Value="Request.Email"
+                                  Validation="@((string email) => UserValidationService.ValidateEmail(email))"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Password" Variant="Variant.Outlined"
+                                  @bind-Value="Request.Password"
+                                  InputType="InputType" Adornment="Adornment.End"
+                                  AdornmentIcon="@InputIcon" OnAdornmentClick="Toggle"
+                                  Validation="@((string password) => UserValidationService.ValidatePassword(password))"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Confirm password" Variant="Variant.Outlined"
+                                  @bind-Value="Request.RepeatedPassword"
+                                  InputType="InputType.Password"
+                                  Validation="@((string repeatedPassword) => UserValidationService.ValidateRepeatedPassword(Request.Password, repeatedPassword))"/>
+                </MudItem>
+                <MudItem xs="12" Class="d-flex justify-center">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@MudForm.IsValid"
+                               Size="Size.Large" FullWidth="@true" OnClick="SignUpAsync">Register</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+</MudForm>

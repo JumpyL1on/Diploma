@@ -1,0 +1,7 @@
+﻿@page "/user/profile"
+@attribute [Authorize]
+<MudTabs Border="@true" Rounded="@true" Outlined="@true" Color="Color.Primary" Centered="@true">
+    <MudTabPanel Text="Команда">
+        <CurrentTeamDetails/>
+    </MudTabPanel>
+</MudTabs>

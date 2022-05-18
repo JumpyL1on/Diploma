@@ -1,0 +1,53 @@
+﻿@page "/user/sign-in"
+@attribute [AllowAnonymous]
+<EditForm Model="@Request" OnValidSubmit="OnValidSubmitAsync">
+    <MudCard Class="ma-auto" Style="width: 30%">
+        <MudCardContent>
+            <MudGrid>
+                <DataAnnotationsValidator/>
+                <MudItem xs="12">
+                    <MudText Align="Align.Center" Typo="Typo.h4">
+                        Sign In
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Align="Align.Center" Typo="Typo.h4">
+                        Login with your Credentials.
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Align="Align.Center">
+                        Don't have an account? <MudLink Href="/user/sign-up">Зарегистрироваться здесь</MudLink>
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="E-mail"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="Request.Email"
+                                  For="() => Request.Email" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="Password"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="Request.Password"
+                                  For="() => Request.Password"
+                                  InputType="InputType"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@InputIcon"
+                                  OnAdornmentClick="Toggle" />
+                </MudItem>
+                <MudItem xs="12" Class="d-flex justify-space-between align-center">
+                    <MudCheckBox T="bool" Label="Remember me?" Color="Color.Primary" Class="ml-n1" />
+                    <MudLink Href="/account/forgot-password">
+                        Forgot password?
+                    </MudLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large">
+                        Sign In
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+</EditForm>

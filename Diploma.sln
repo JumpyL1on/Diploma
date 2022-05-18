@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.WebAPI", "Diploma.WebAPI\Diploma.WebAPI.csproj", "{2B47DAE0-44B4-47FF-AD4A-3CAFCE3A0479}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.WebAssembly", "Diploma.WebAssembly\Diploma.WebAssembly.csproj", "{D439EB8C-EC4D-4A5A-8263-78FD0E7262E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Common", "Diploma.Common\Diploma.Common.csproj", "{E6DF200B-3A5B-476E-BF53-2BDC6C296E47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.WebAPI.DataAccess", "Diploma.WebAPI.DataAccess\Diploma.WebAPI.DataAccess.csproj", "{76EE8C53-6AB0-4614-BED0-E0641D58E63C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.WebAPI.BusinessLogic", "Diploma.WebAPI.BusinessLogic\Diploma.WebAPI.BusinessLogic.csproj", "{072F6118-D75B-4F4E-94C9-E54008F0909B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.WebAssembly.BusinessLogic", "Diploma.WebAssembly.BusinessLogic\Diploma.WebAssembly.BusinessLogic.csproj", "{D0024D49-CFFE-432F-B108-C22A35B768F9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B47DAE0-44B4-47FF-AD4A-3CAFCE3A0479}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B47DAE0-44B4-47FF-AD4A-3CAFCE3A0479}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B47DAE0-44B4-47FF-AD4A-3CAFCE3A0479}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B47DAE0-44B4-47FF-AD4A-3CAFCE3A0479}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D439EB8C-EC4D-4A5A-8263-78FD0E7262E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D439EB8C-EC4D-4A5A-8263-78FD0E7262E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D439EB8C-EC4D-4A5A-8263-78FD0E7262E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D439EB8C-EC4D-4A5A-8263-78FD0E7262E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6DF200B-3A5B-476E-BF53-2BDC6C296E47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6DF200B-3A5B-476E-BF53-2BDC6C296E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6DF200B-3A5B-476E-BF53-2BDC6C296E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6DF200B-3A5B-476E-BF53-2BDC6C296E47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76EE8C53-6AB0-4614-BED0-E0641D58E63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76EE8C53-6AB0-4614-BED0-E0641D58E63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76EE8C53-6AB0-4614-BED0-E0641D58E63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76EE8C53-6AB0-4614-BED0-E0641D58E63C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{072F6118-D75B-4F4E-94C9-E54008F0909B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{072F6118-D75B-4F4E-94C9-E54008F0909B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{072F6118-D75B-4F4E-94C9-E54008F0909B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{072F6118-D75B-4F4E-94C9-E54008F0909B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0024D49-CFFE-432F-B108-C22A35B768F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0024D49-CFFE-432F-B108-C22A35B768F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0024D49-CFFE-432F-B108-C22A35B768F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0024D49-CFFE-432F-B108-C22A35B768F9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,14 @@
+﻿@page "/tournaments"
+@using Diploma.Common.DTOs
+<MudTable Items="_tournaments"
+          Loading="@(_tournaments == null)"
+          OnRowClick="OnRowClick"
+          T="TournamentDTO">
+    <RowTemplate>
+        <MudTd>@context.Start.ToString("f")</MudTd>
+        <MudTd>@context.Title</MudTd>
+        <MudTd>Single Elimination</MudTd>
+        <MudTd>5v5 Captain mode</MudTd>
+        <MudTd>@($"{context.CurrentParticipantsNumber}/{context.ParticipantsNumber}")</MudTd>
+    </RowTemplate>
+</MudTable>

@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.Components
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="@MudForm">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudTextField Label="Название*" Variant="Variant.Outlined" @bind-Value="Request.Title"
+                                          Validation="@((string title) => TeamValidationService.ValidateTitle(title))"/>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField T="@string" Label="Тег*" Variant="Variant.Outlined" @bind-Value="Request.Tag"
+                                          Validation="@((string tag) => TeamValidationService.ValidateTag(tag))"/>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudButton Disabled="@MudForm.IsValid" Variant="Variant.Filled" Color="Color.Primary"
+                                       Size="Size.Medium" FullWidth="@true" OnClick="OnValidSubmitAsync">
+                                Создать команду
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudForm>
+    </DialogContent>
+</MudDialog>
