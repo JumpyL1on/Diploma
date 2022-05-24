@@ -4,7 +4,7 @@ using SteamKit2.GC;
 using SteamKit2.GC.Dota.Internal;
 using SteamKit2.Internal;
 
-namespace SteamBot;
+namespace Diploma.WebAPI.BusinessLogic;
 
 public partial class SteamGameClient : ClientMsgHandler
 {
@@ -60,7 +60,8 @@ public partial class SteamGameClient : ClientMsgHandler
     public void MoveToPool()
     {
         Console.WriteLine("Move bot to pool");
-        var move = new ClientGCMsgProtobuf<CMsgPracticeLobbySetTeamSlot>((uint)EDOTAGCMsg.k_EMsgGCPracticeLobbySetTeamSlot);
+        var move = new ClientGCMsgProtobuf<CMsgPracticeLobbySetTeamSlot>(
+            (uint)EDOTAGCMsg.k_EMsgGCPracticeLobbySetTeamSlot);
         move.Body.team = DOTA_GC_TEAM.DOTA_GC_TEAM_PLAYER_POOL;
         move.Body.slot = 1;
         Send(move);
@@ -72,6 +73,14 @@ public partial class SteamGameClient : ClientMsgHandler
         var invite = new ClientGCMsgProtobuf<CMsgInviteToLobby>((uint)EGCBaseMsg.k_EMsgGCInviteToLobby);
         invite.Body.steam_id = steamId;
         Send(invite);
+    }
+
+    public void KickFromTeam(uint accountId)
+    {
+        var kick = new ClientGCMsgProtobuf<CMsgPracticeLobbyKickFromTeam>(
+            (uint)EDOTAGCMsg.k_EMsgGCPracticeLobbyKickFromTeam);
+        kick.Body.account_id = accountId;
+        Send(kick);
     }
 
     public void LeaveLobby()
@@ -120,7 +129,7 @@ public partial class SteamGameClient : ClientMsgHandler
             { (uint)ESOMsg.k_ESOMsg_CacheUnsubscribed, HandleCacheUnsubscribed },
             { (uint)ESOMsg.k_ESOMsg_UpdateMultiple, HandleUpdateMultiple },
             { (uint)EGCBaseClientMsg.k_EMsgGCClientWelcome, HandleWelcome },
-            { (uint)EGCBaseClientMsg.k_EMsgGCClientConnectionStatus, HandleConnectionStatus },
+            { (uint)EGCBaseClientMsg.k_EMsgGCClientConnectionStatus, HandleConnectionStatus }
         };
         if (!messageMap.TryGetValue(gcMsg.MsgType, out var func))
         {

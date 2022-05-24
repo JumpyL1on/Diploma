@@ -66,13 +66,13 @@ public class TournamentService : ITournamentService
 
         _backgroundJobClient
             .Schedule<ITournamentService>(
-                tournamentService => tournamentService.BeginTournament(id, start),
+                tournamentService => tournamentService.BeginTournament(id, start, request.MaxParticipantsNumber),
                 start - DateTime.UtcNow);
 
         return new CreatedResult<object>();
     }
 
-    public async Task BeginTournament(Guid id, DateTime start)
+    public async Task BeginTournament(Guid id, DateTime start, int participantNumber)
     {
         var participantIds = await _dbContext.Participants
             .Where(participant => participant.TournamentId == id)
@@ -83,7 +83,9 @@ public class TournamentService : ITournamentService
 
         var random = new Random();
 
-        for (var i = 0; i < 0; i++)
+        var matches = new List<Match>();
+        
+        for (var i = 0; i < participantNumber / 2; i++)
         {
             var participantAId = GetRandomParticipantId(participantIds, random);
 
@@ -97,8 +99,38 @@ public class TournamentService : ITournamentService
                 ParticipantAId = participantAId,
                 ParticipantBId = participantBId
             };
+            
+            matches.Add(match);
 
-            _dbContext.Add(match);
+            _dbContext.Matches.Add(match);
+        }
+
+        await _dbContext.SaveChangesAsync();
+
+        foreach (var match in matches)
+        {
+            
+        }
+        
+        participantNumber /= 2;
+        for (var i = 2; participantNumber != 1; participantNumber /= 2)
+        {
+            var order = 1;
+            for (var j = 0; j < participantNumber / 2; j++)
+            {
+                var match = new Match
+                {
+                    Start = start,
+                    Round = i,
+                    Order = order++,
+                    ParticipantAId = null,
+                    ParticipantBId = null
+                };
+
+                _dbContext.Add(match);
+            }
+
+            i++;
         }
 
         await _dbContext.SaveChangesAsync();

@@ -2,7 +2,7 @@
 using SteamKit2.GC;
 using SteamKit2.GC.Dota.Internal;
 
-namespace SteamBot;
+namespace Diploma.WebAPI.BusinessLogic;
 
 public partial class SteamGameClient
 {

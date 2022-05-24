@@ -2,6 +2,7 @@
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.DataAccess;
 using Diploma.WebAPI.DataAccess.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diploma.WebAPI.BusinessLogic.Services;
@@ -30,6 +31,18 @@ public class TeamMemberService : ITeamMemberService
         
         //await UserManager<>.AddClaimAsync(request.AppUser, new Claim("Role", "Participant"));
         return new CreatedResult<object>();
+    }
+
+    public async Task<Result<object>> InviteToLobby([FromServices] SteamGameClient gameClient, Guid userId)
+    {
+        var steamId = await AppDbContext.Users
+            .Where(user => user.Id == userId)
+            .Select(user => user.SteamId)
+            .SingleOrDefaultAsync();
+        
+        gameClient.InviteToLobby(steamId.GetValueOrDefault());
+        
+        return new NoContentResult<object>();
     }
 
     public async Task<Result<object>> DeleteAsync(Guid id, Guid userId)

@@ -6,4 +6,5 @@ namespace Diploma.WebAPI.BusinessLogic.Interfaces;
 public interface IMatchService
 {
     public Task<Result<MatchDTO>> GetCurrentMatch(Guid userId);
+    //public void Begin(Guid id);
 }

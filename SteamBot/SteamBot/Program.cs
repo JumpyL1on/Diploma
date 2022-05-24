@@ -25,9 +25,10 @@ manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
 manager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
 manager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
 
-manager.Subscribe<SteamGameClient.ConnectionStatus>(OnConnectionStatus);
+manager.Subscribe<SteamGameClient.ConnectionStatusCallback>(OnConnectionStatus);
 manager.Subscribe<SteamGameClient.GCWelcomeCallback>(OnGCWelcome);
 manager.Subscribe<SteamGameClient.UnhandledDotaGCCallback>(OnUnhandledDotaGC);
+manager.Subscribe<SteamGameClient.PracticeLobbySnapshotCallback>(OnPracticeLobbySnapshot);
 
 Console.WriteLine("Connecting to Steam...");
 
@@ -92,11 +93,6 @@ while (isRunning)
             gameClient.Stop();
             break;
         }
-        case "print":
-        {
-            gameClient.Print();
-            break;
-        }
         case "exit":
         {
             steamUser.LogOff();
@@ -105,16 +101,20 @@ while (isRunning)
     }
 }
 
-void OnConnectionStatus(SteamGameClient.ConnectionStatus callback)
+void OnConnectionStatus(SteamGameClient.ConnectionStatusCallback callback)
 {
-    
-    Console.WriteLine(callback.result.status);
+    Console.WriteLine($"Connection status: {callback.result.status}");
 }
 
 void OnGCWelcome(SteamGameClient.GCWelcomeCallback callback)
 {
-    Console.Write("GC welcoming us version ");
-    Console.WriteLine(callback.Version);
+    Console.WriteLine($"GC welcoming us, version {callback.Version}");
+}
+
+void OnPracticeLobbySnapshot(SteamGameClient.PracticeLobbySnapshotCallback callback)
+{
+    Console.WriteLine(
+        $"Lobby was updated: {callback.lobby.state} {callback.lobby.game_state} {callback.lobby.match_outcome}");
 }
 
 void OnUnhandledDotaGC(SteamGameClient.UnhandledDotaGCCallback callback)
