@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Diploma.Common.Helpers;
+using Diploma.Common.Exceptions;
 using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.DataAccess.Entities;
@@ -9,16 +9,16 @@ namespace Diploma.WebAPI.BusinessLogic.Services;
 
 public class UserService : IUserService
 {
-    public UserService(UserManager<User> userManager, IJWTService jwtService)
+    public UserService(UserManager<User> userManager, IJwtService jwtService)
     {
         UserManager = userManager;
         JWTService = jwtService;
     }
 
     private UserManager<User> UserManager { get; }
-    private IJWTService JWTService { get; }
+    private IJwtService JWTService { get; }
 
-    public async Task<Result<object>> SignUpAsync(SignUpUserRequest request)
+    public async Task SignUpUserAsync(SignUpUserRequest request)
     {
         var user = new User
         {
@@ -27,35 +27,34 @@ public class UserService : IUserService
             Surname = request.Surname,
             Email = request.Email
         };
-        
-        var result = await UserManager.CreateAsync(user, request.Password);
-        
-        if (result.Succeeded)
-        {
-            return new CreatedResult<object>();
-        }
 
-        var errors = result.Errors
-            .Select(identityError => identityError.Description)
-            .ToList();
-        
-        return new UnprocessableEntityResult<object>(errors);
+        var result = await UserManager.CreateAsync(user, request.Password);
+
+        if (!result.Succeeded)
+        {
+            var errors = result.Errors
+                .Select(identityError => identityError.Description)
+                .ToList();
+
+            throw new BusinessException(errors[0]);
+        }
     }
 
-    public async Task<Result<string>> SignInAsync(SignInUserRequest request)
+    public async Task<string> SignInUserAsync(SignInUserRequest request)
     {
         var user = await UserManager.FindByEmailAsync(request.Email);
-        
+
         if (!await UserManager.CheckPasswordAsync(user, request.Password))
         {
-            return new UnprocessableEntityResult<string>("Неверное имя пользователя или пароль");
+            throw new ValidationException("Неверное имя пользователя или пароль");
         }
 
         var claims = new List<Claim>
         {
-            new("Id", user.Id.ToString())
+            new("Id", user.Id.ToString()),
+            new("Name", user.UserName)
         };
-        
-        return new OkResult<string>(JWTService.GenerateToken(claims));
+
+        return JWTService.GenerateAccessToken(claims);
     }
 }

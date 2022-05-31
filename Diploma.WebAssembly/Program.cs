@@ -1,45 +1,35 @@
 using Blazored.LocalStorage;
-using Diploma.Common.Interfaces;
-using Diploma.Common.ValidationServices;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Diploma.WebAssembly;
-using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Diploma.WebAssembly.BusinessLogic.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
-var webAssemblyHostBuilder = WebAssemblyHostBuilder.CreateDefault(args);
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-webAssemblyHostBuilder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<App>("#app");
 
-webAssemblyHostBuilder.RootComponents.Add<HeadOutlet>("head::after");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-webAssemblyHostBuilder.Services.AddMudServices();
+builder.Services.AddServices();
 
-webAssemblyHostBuilder.Services.AddScoped(_ => new HttpClient
+builder.Services.AddValidationServices();
+
+builder.Services.AddScoped(serviceProvider =>
 {
-    BaseAddress = new Uri("https://localhost:7095/api/")
+    var httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7095/api/") };
+
+    return httpClient.EnableIntercept(serviceProvider);
 });
 
-webAssemblyHostBuilder.Services.AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider>();
+builder.Services.AddHttpClientInterceptor();
 
-webAssemblyHostBuilder.Services.AddAuthorizationCore();
+builder.Services.AddMudServices();
 
-webAssemblyHostBuilder.Services.AddBlazoredLocalStorage();
+builder.Services.AddAuthorizationCore();
 
-webAssemblyHostBuilder.Services
-    .AddScoped<IUserService, UserService>()
-    .AddScoped<IUserValidationService, UserValidationService>();
+builder.Services.AddBlazoredLocalStorage();
 
-webAssemblyHostBuilder.Services.AddScoped<IMatchService, MatchService>();
-
-webAssemblyHostBuilder.Services
-    .AddScoped<ITeamService, TeamService>()
-    .AddScoped<ITeamValidationService, TeamValidationService>();
-
-webAssemblyHostBuilder.Services.AddScoped<ITournamentService, TournamentService>();
-
-await webAssemblyHostBuilder
-    .Build()
-    .RunAsync();
+await builder.Build().RunAsync();

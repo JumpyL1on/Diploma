@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Diploma.Common.DTOs;
-using Diploma.Common.Helpers;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -19,23 +18,14 @@ public class MatchService : IMatchService
         _mapper = mapper;
     }
 
-    public async Task<Result<MatchDTO>> GetCurrentMatch(Guid userId)
+    public async Task<MatchDTO?> GetCurrentMatch(Guid userId)
     {
-        var currentMatch = await _dbContext.Matches
+        return await _dbContext.Matches
             .Where(match =>
                 match.End == null &&
                 (match.ParticipantA.Team.TeamMembers.Any(teamMember => teamMember.UserId == userId) ||
                  match.ParticipantB.Team.TeamMembers.Any(teamMember => teamMember.UserId == userId)))
             .ProjectTo<MatchDTO>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
-
-        if (currentMatch == null)
-        {
-            return new NotFoundResult<MatchDTO>("У вас пока нет матчей");
-        }
-
-        return new OkResult<MatchDTO>(currentMatch);
     }
-    
-    
 }

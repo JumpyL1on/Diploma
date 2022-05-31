@@ -1,0 +1,44 @@
+﻿@using Diploma.Common.DTOs
+@if (_games != null && _games.Count == 0)
+{
+    <MudText Typo="Typo.h5" Class="mt-6">
+        Привязанные игры
+    </MudText>
+    <MudCard Class="d-flex justify-center mt-6">
+        <MudCardContent>
+            <MudText>Вы еще не привязывали игры к профилю</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Href="user/profile/edit">
+                <MudText Typo="Typo.body1">Привязать игры</MudText>
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+}
+@if (_games != null && _games.Count != 0)
+{
+    <MudStack Row="@true" Class="mt-6">
+        <MudText Typo="Typo.h5">Привязанные игры</MudText>
+        <MudButton Variant="Variant.Filled" Href="/user/profile/edit">
+            <MudStack Row="@true">
+                <MudIcon Icon="@Icons.Material.Filled.Edit"/>
+                <MudText Typo="Typo.body1">Редактировать</MudText>
+            </MudStack>
+        </MudButton>
+    </MudStack>
+    <MudTable Items="_games" T="GameDTO" Class="mt-6">
+        <HeaderContent>
+            <MudTh>Игра</MudTh>
+            <MudTh>Ник в игре</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudStack Row="@true">
+                    <MudIcon Icon="@Icons.Custom.Brands.Steam"/>
+                    <MudText Typo="Typo.body1">@context.Title</MudText>
+                </MudStack>
+            </MudTd>
+            <MudTd>@context.Nickname</MudTd>
+        </RowTemplate>
+    </MudTable>
+}

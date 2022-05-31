@@ -1,6 +1,5 @@
 ﻿using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
-using Diploma.WebAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,38 +7,40 @@ namespace Diploma.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/tournaments")]
-//[Authorize]
+[Authorize]
 public class TournamentController : ControllerBase
 {
     private readonly ITournamentService _tournamentService;
-    
+
     public TournamentController(ITournamentService tournamentService)
     {
         _tournamentService = tournamentService;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetByStatus([FromQuery] string status)
     {
-        var result = await _tournamentService.GetAll();
-        
-        return this.FromResult(result);
+        return status switch
+        {
+            "upcoming" => Ok(await _tournamentService.GetUpcomingTournaments()),
+            "current" => Ok(await _tournamentService.GetCurrentTournaments()),
+            "finished" => Ok(await _tournamentService.GetFinishedTournaments()),
+            _ => BadRequest($"Wrong status {status}")
+        };
     }
 
     [HttpGet]
     [Route("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var result = await _tournamentService.GetById(id);
-
-        return this.FromResult(result);
+        return Ok(await _tournamentService.GetById(id));
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateTournamentAsync(CreateTournamentRequest request)
     {
-        var result = await _tournamentService.CreateTournamentAsync(request);
+        await _tournamentService.CreateTournamentAsync(request);
 
-        return this.FromResult(result);
+        return Ok();
     }
 }

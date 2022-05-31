@@ -4,9 +4,22 @@
 <MudThemeProvider/>
 <MudLayout>
     <AuthorizeView>
-        <Authorized><NavBar/></Authorized>
+        <Authorized>
+            <MudAppBar Color="Color.Surface" Class="px-16">
+                <MudLink Color="Color.Default" Href="/" Class="pl-11">
+                    ТУРНИРЫ
+                </MudLink>
+                <MudSpacer/>
+                <MudLink Color="Color.Default" Href="/user/profile" Class="pr-2">
+                    ПРОФИЛЬ
+                </MudLink>
+                <MudLink Color="Color.Default" Href="/user/sign-out" Class="pr-11">
+                    ВЫЙТИ
+                </MudLink>
+            </MudAppBar>
+        </Authorized>
     </AuthorizeView>
-    <MudMainContent Class="pt-16 px-16">
+    <MudMainContent>
         <MudContainer Class="mt-6">
             @Body
         </MudContainer>

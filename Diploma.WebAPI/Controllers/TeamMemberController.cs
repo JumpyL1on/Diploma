@@ -16,19 +16,21 @@ public class TeamMemberController : ControllerBase
     }
 
     private ITeamMemberService TeamMemberService { get; }
-    
+
     [HttpPost]
     public async Task<IActionResult> Post(Guid teamId)
     {
-        var result = await TeamMemberService.CreateAsync(this.GetUserId(), teamId);
-        return this.FromResult(result);
+        await TeamMemberService.CreateAsync(this.GetUserId(), teamId);
+
+        return Ok();
     }
-    
+
     [HttpDelete]
     [Route("{id:guid}")]
     public async Task<IActionResult> Delete(Guid teamId, Guid id)
     {
-        var result = await TeamMemberService.DeleteAsync(id, this.GetUserId());
-        return this.FromResult(result);
+        await TeamMemberService.DeleteAsync(id, this.GetUserId());
+
+        return Ok();
     }
 }

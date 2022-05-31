@@ -1,25 +1,22 @@
 using System.Text;
-using Diploma.WebAPI.BusinessLogic;
-using Diploma.WebAPI.BusinessLogic.Interfaces;
+using Diploma.WebAPI;
 using Diploma.WebAPI.BusinessLogic.Profiles;
-using Diploma.WebAPI.BusinessLogic.Services;
 using Diploma.WebAPI.DataAccess;
 using Diploma.WebAPI.DataAccess.Entities;
 using Diploma.WebAPI.DataAccess.ValueObjects;
 using Diploma.WebAPI.Extensions;
-using Hangfire;
-using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
-var webApplicationBuilder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-webApplicationBuilder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddDbContext<AppDbContext>();
 
-webApplicationBuilder.Services.AddAutoMapper(typeof(MatchProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(MatchProfile).Assembly);
 
-webApplicationBuilder.Services
+builder.Services
     .AddIdentityCore<User>(identityOptions =>
     {
         identityOptions.User.RequireUniqueEmail = true;
@@ -27,20 +24,25 @@ webApplicationBuilder.Services
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
 
-webApplicationBuilder.Services.AddServices();
+builder.Services.AddServices();
 
-webApplicationBuilder.Services.AddValidationServices();
+builder.Services.AddValidationServices();
 
-webApplicationBuilder.Services
+builder.Services
     .AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(options =>
     {
-        var jwtSettings = webApplicationBuilder.Configuration.GetSection("JWTSettings").Get<JWTSettings>();
-        options.TokenValidationParameters = new TokenValidationParameters()
+        var jwtSettings = builder.Configuration
+            .GetSection("JWTSettings")
+            .Get<JwtSettings>();
+
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
@@ -50,23 +52,27 @@ webApplicationBuilder.Services
             ValidAudience = jwtSettings.ValidAudience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey))
         };
-    });
+    })
+    .AddCookie()
+    .AddSteam(options => options.ApplicationKey = "2299E12A058C57E16AD5661BD11E5F84");
 
-webApplicationBuilder.Services.AddControllers();
+builder.Services.AddControllers(options => { options.Filters.Add(typeof(ExceptionFilter)); });
 
-webApplicationBuilder.Services
+builder.Services.AddMvcCore();
+
+builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen();
 
-webApplicationBuilder.Services.AddHangfire(globalConfiguration =>
+/*webApplicationBuilder.Services.AddHangfire(globalConfiguration =>
 {
     var connectionString = webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection");
     globalConfiguration.UsePostgreSqlStorage(connectionString);
 });
 
-webApplicationBuilder.Services.AddHangfireServer();
+webApplicationBuilder.Services.AddHangfireServer();*/
 
-var webApplication = webApplicationBuilder.Build();
+var webApplication = builder.Build();
 
 if (webApplication.Environment.IsDevelopment())
 {
@@ -74,13 +80,8 @@ if (webApplication.Environment.IsDevelopment())
         .UseSwagger()
         .UseSwaggerUI();
 
-    webApplication.UseCors(corsPolicyBuilder =>
-    {
-        corsPolicyBuilder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
+    webApplication.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+    );
 }
 
 webApplication.UseHttpsRedirection();
@@ -93,6 +94,6 @@ webApplication.UseAuthorization();
 
 webApplication.MapControllers();
 
-webApplication.UseHangfireDashboard();
+//webApplication.UseHangfireDashboard();
 
 await webApplication.RunAsync();

@@ -21,7 +21,6 @@ public class MatchController : ControllerBase
     [Route("current")]
     public async Task<IActionResult> GetCurrentMatch()
     {
-        var result = await _matchService.GetCurrentMatch(this.GetUserId());
-        return this.FromResult(result);
+        return Ok(await _matchService.GetCurrentMatch(this.GetUserId()));
     }
 }

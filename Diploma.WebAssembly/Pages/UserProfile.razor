@@ -1,7 +1,12 @@
 ﻿@page "/user/profile"
-@attribute [Authorize]
-<MudTabs Border="@true" Rounded="@true" Outlined="@true" Color="Color.Primary" Centered="@true">
-    <MudTabPanel Text="Команда">
-        <CurrentTeamDetails/>
+<MudTabs Color="Color.Primary" Outlined="@true" Rounded="@true" Centered="@true">
+    <MudTabPanel Text="Команды">
+        <UserTeams/>
+    </MudTabPanel>
+    <MudTabPanel Text="Игры">
+        <UserGames/>
+    </MudTabPanel>
+    <MudTabPanel Text="Организации">
+        <UserOrganizations/>
     </MudTabPanel>
 </MudTabs>

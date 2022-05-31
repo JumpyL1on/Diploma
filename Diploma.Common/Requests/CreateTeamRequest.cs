@@ -3,5 +3,5 @@
 public class CreateTeamRequest
 {
     public string Title { get; set; }
-    public string Tag { get; set; }
+    public string Game { get; set; }
 }

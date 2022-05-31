@@ -8,8 +8,6 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
 {
     public void Configure(EntityTypeBuilder<Team> entityTypeBuilder)
     {
-        entityTypeBuilder.ToTable("Team");
-
         entityTypeBuilder
             .Property(team => team.Id)
             .IsRequired()
@@ -17,10 +15,6 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
 
         entityTypeBuilder
             .Property(team => team.Title)
-            .IsRequired();
-
-        entityTypeBuilder
-            .Property(team => team.Tag)
             .IsRequired();
     }
 }

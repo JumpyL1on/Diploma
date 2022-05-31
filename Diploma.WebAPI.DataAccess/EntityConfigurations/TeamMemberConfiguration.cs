@@ -8,8 +8,6 @@ public class TeamMemberConfiguration : IEntityTypeConfiguration<TeamMember>
 {
     public void Configure(EntityTypeBuilder<TeamMember> entityTypeBuilder)
     {
-        entityTypeBuilder.ToTable("TeamMember");
-
         entityTypeBuilder
             .Property(teamMember => teamMember.Id)
             .IsRequired()

@@ -17,4 +17,9 @@ public class MatchService : IMatchService
     {
         return await _httpClient.GetFromJsonAsync<MatchDTO>("matches/current");
     }
+
+    public Task<MatchDTO?> GetCurrentMatch(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
 }

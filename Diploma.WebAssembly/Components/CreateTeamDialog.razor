@@ -1,27 +1,24 @@
 ﻿@using Microsoft.AspNetCore.Components
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="@MudForm">
-            <MudCard>
-                <MudCardContent>
-                    <MudGrid>
-                        <MudItem xs="12">
-                            <MudTextField Label="Название*" Variant="Variant.Outlined" @bind-Value="Request.Title"
-                                          Validation="@((string title) => TeamValidationService.ValidateTitle(title))"/>
-                        </MudItem>
-                        <MudItem xs="12">
-                            <MudTextField T="@string" Label="Тег*" Variant="Variant.Outlined" @bind-Value="Request.Tag"
-                                          Validation="@((string tag) => TeamValidationService.ValidateTag(tag))"/>
-                        </MudItem>
-                        <MudItem xs="12">
-                            <MudButton Disabled="@MudForm.IsValid" Variant="Variant.Filled" Color="Color.Primary"
-                                       Size="Size.Medium" FullWidth="@true" OnClick="OnValidSubmitAsync">
-                                Создать команду
-                            </MudButton>
-                        </MudItem>
-                    </MudGrid>
-                </MudCardContent>
-            </MudCard>
+        <MudForm @ref="@_form">
+            <MudStack>
+                <MudTextField Label="Название команды*"
+                              @bind-Value="_request.Title"
+                              Placeholder="Введите название"
+                              Validation="@((string title) => TeamValidationService.ValidateTitle(title))"/>
+                <MudSelect Class="mt-6" Placeholder="Выберите игру" Label="Игра*" @bind-Value="_request.Game">
+                    <MudSelectItem Value="@("DOTA 2")">
+                        <MudStack Row="@true">
+                            <MudIcon Icon="@Icons.Custom.Brands.Steam"/>
+                            <MudText>DOTA 2</MudText>
+                        </MudStack>
+                    </MudSelectItem>
+                </MudSelect>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClickAsync" Class="mt-6">
+                    Создать команду
+                </MudButton>
+            </MudStack>
         </MudForm>
     </DialogContent>
 </MudDialog>

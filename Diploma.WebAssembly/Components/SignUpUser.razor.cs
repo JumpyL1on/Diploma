@@ -1,5 +1,4 @@
-﻿using Diploma.Common.Enums;
-using Diploma.Common.Interfaces;
+﻿using Diploma.Common.Interfaces;
 using Diploma.Common.Requests;
 using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -9,49 +8,40 @@ namespace Diploma.WebAssembly.Components;
 
 public partial class SignUpUser
 {
-    private MudForm MudForm { get; set; }
-    private SignUpUserRequest Request { get; } = new();
-    private bool IsPasswordVisible { get; set; }
-    private InputType InputType { get; set; } = InputType.Password;
-    private string InputIcon { get; set; } = Icons.Material.Filled.VisibilityOff;
+    private MudForm _mudForm = null!;
+    private readonly SignUpUserRequest _request = new();
+    private bool _isPasswordVisible;
+    private InputType _inputType = InputType.Password;
+    private string _inputIcon = Icons.Material.Filled.VisibilityOff;
+    [Inject] public IUserService UserService { get; set; } = null!;
+    [Inject] public IUserValidationService UserValidationService { get; set; } = null!;
+    [Inject] public NavigationManager NavManager { get; set; } = null!;
 
-    [Inject] public NavigationManager NavigationManager { get; set; }
-
-    [Inject] public ISnackbar Snackbar { get; set; }
-
-    [Inject] public IUserService UserService { get; set; }
-    [Inject] public IUserValidationService UserValidationService { get; set; }
-    
     private void Toggle()
     {
-        if (IsPasswordVisible)
+        if (_isPasswordVisible)
         {
-            IsPasswordVisible = false;
-            InputType = InputType.Password;
-            InputIcon = Icons.Material.Filled.VisibilityOff;
+            _isPasswordVisible = false;
+            _inputType = InputType.Password;
+            _inputIcon = Icons.Material.Filled.VisibilityOff;
         }
         else
         {
-            IsPasswordVisible = true;
-            InputType = InputType.Text;
-            InputIcon = Icons.Material.Filled.Visibility;
+            _isPasswordVisible = true;
+            _inputType = InputType.Text;
+            _inputIcon = Icons.Material.Filled.Visibility;
         }
     }
 
-    private async Task SignUpAsync()
+    private async Task OnClickAsync()
     {
-        var result = await UserService.SignUpAsync(Request);
+        await _mudForm.Validate();
 
-        if (result.ResultType == ResultType.Ok)
+        if (_mudForm.IsValid)
         {
-            NavigationManager.NavigateTo("user/sign-in");
-        }
-        else
-        {
-            foreach (var error in result.Errors)
-            {
-                Snackbar.Add(error, Severity.Error);
-            }
+            await UserService.SignUpUserAsync(_request);
+
+            NavManager.NavigateTo("user/sign-in");
         }
     }
 }

@@ -1,14 +1,40 @@
-﻿@page "/tournaments"
+﻿@page "/"
 @using Diploma.Common.DTOs
-<MudTable Items="_tournaments"
-          Loading="@(_tournaments == null)"
-          OnRowClick="OnRowClick"
-          T="TournamentDTO">
+<MudTabs Centered="@true" Outlined="@true" Color="@Color.Primary">
+    <MudTabPanel Text="Предстоящие">
+        
+    </MudTabPanel>
+    <MudTabPanel Text="Текущие">
+            
+    </MudTabPanel>
+    <MudTabPanel Text="Завершенные">
+        
+    </MudTabPanel>
+</MudTabs>
+<MudTable Items="_tournaments" Loading="@(_tournaments == null)" T="TournamentDTO" Class="mt-6">
+    <HeaderContent>
+        <MudTh>Турнир</MudTh>
+        <MudTh>Начало</MudTh>
+        <MudTh>Формат проведения</MudTh>
+        <MudTh>Формат участия</MudTh>
+        <MudTh>Участники</MudTh>
+        <MudTh>Статус</MudTh>
+    </HeaderContent>
     <RowTemplate>
-        <MudTd>@context.Start.ToString("f")</MudTd>
-        <MudTd>@context.Title</MudTd>
+        <MudTd>
+            <MudLink>@context.Title</MudLink>
+        </MudTd>
+        <MudTd>@context.Start</MudTd>
         <MudTd>Single Elimination</MudTd>
         <MudTd>5v5 Captain mode</MudTd>
         <MudTd>@($"{context.CurrentParticipantsNumber}/{context.ParticipantsNumber}")</MudTd>
+        @if (DateTime.UtcNow >= context.Start)
+        {
+            <MudTd>НАЧАТО</MudTd>
+        }
+        else
+        {
+            <MudTd>НАЧИНАЕТСЯ @context.Start.ToString("f")</MudTd>
+        }
     </RowTemplate>
 </MudTable>

@@ -1,6 +1,5 @@
 ﻿using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
-using Diploma.WebAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,17 +19,17 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Route("sign-up")]
-    public async Task<IActionResult> SignUpAsync([FromBody] SignUpUserRequest signUpUser)
+    public async Task<IActionResult> SignUpAsync([FromBody] SignUpUserRequest request)
     {
-        var result = await _userService.SignUpAsync(signUpUser);
-        return this.FromResult(result);
+        await _userService.SignUpUserAsync(request);
+
+        return Ok();
     }
 
     [HttpPost]
     [Route("sign-in")]
-    public async Task<IActionResult> SignInAsync([FromBody] SignInUserRequest signInUser)
+    public async Task<IActionResult> SignInAsync([FromBody] SignInUserRequest request)
     {
-        var result = await _userService.SignInAsync(signInUser);
-        return this.FromResult(result);
+        return Ok(await _userService.SignInUserAsync(request));
     }
 }

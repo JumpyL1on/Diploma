@@ -1,0 +1,32 @@
+﻿@page "/user/profile/edit"
+<MudText Typo="Typo.h3">
+    Редактировать профиль
+</MudText>
+<MudText Typo="Typo.h5">
+    Привязанные игры
+</MudText>
+<MudSimpleTable>
+    <thead>
+    <tr>
+        <th>Игра</th>
+        <th>Ник в игре</th>
+        <th/>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <MudStack Row="@true">
+                <MudIcon Icon="@Icons.Custom.Brands.Steam"/>
+                <MudText>DOTA 2</MudText>
+            </MudStack>
+        </td>
+        <td>qwerty</td>
+        <td>
+            <MudButton Href="https://localhost:7095/steam/login">
+                Привязать аккаунт
+            </MudButton>
+        </td>
+    </tr>
+    </tbody>
+</MudSimpleTable>

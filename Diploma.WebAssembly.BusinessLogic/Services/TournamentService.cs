@@ -15,7 +15,7 @@ public class TournamentService : ITournamentService
 
     public async Task<List<TournamentDTO>> GetAll()
     {
-        return await _httpClient.GetFromJsonAsync<List<TournamentDTO>>("tournaments");
+        return await _httpClient.GetFromJsonAsync<List<TournamentDTO>>("tournaments?status=current");
     }
 
     public async Task<TournamentDetailsDTO> GetById(Guid id)

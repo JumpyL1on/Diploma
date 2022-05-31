@@ -1,0 +1,50 @@
+﻿@using Diploma.Common.DTOs
+@if (_organizations != null && _organizations.Count == 0)
+{
+    <MudText Typo="Typo.h6" Class="mt-6">
+        Мои организации
+    </MudText>
+    <MudCard Class="mt-6">
+        <MudCardContent Class="d-flex justify-center">
+            <MudText Typo="Typo.body1">
+                Создайте свою первую организацию
+            </MudText>
+        </MudCardContent>
+        <MudCardActions Class="justify-center">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OnClickAsync">
+                <MudStack Row="@true">
+                    <MudIcon Icon="@Icons.Material.Filled.Add"/>
+                    <MudText Typo="Typo.body1">Создать организацию</MudText>
+                </MudStack>
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+}
+@if (_organizations != null && _organizations.Count != 0)
+{
+    <MudStack Row="@true" Class="mt-6">
+        <MudText Typo="Typo.h6">Мои организации</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClickAsync">
+            <MudStack Row="@true">
+                <MudIcon Icon="@Icons.Material.Filled.Add"/>
+                <MudText Typo="Typo.body1">Создать организацию</MudText>
+            </MudStack>
+        </MudButton>
+    </MudStack>
+    <MudTable Items="_organizations" T="OrganizationDTO" Class="mt-6">
+        <HeaderContent>
+            <MudTh>Организация</MudTh>
+            <MudTh>Роль</MudTh>
+            <MudTh/>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Title</MudTd>
+            <MudTd>@context.Role</MudTd>
+            <MudTd>
+                <MudButton Variant="Variant.Filled">
+                    Редактировать
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}

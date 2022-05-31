@@ -1,0 +1,57 @@
+﻿@using Diploma.Common.DTOs
+@if (_teams != null && _teams.Count == 0)
+{
+    <MudText Typo="Typo.h5" Class="mt-6">
+        Мои команды
+    </MudText>
+    <MudCard Class="d-flex justify-center">
+        <MudCardContent>
+            <MudText>Создайте свою первую команду</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" OnClick="OnClickAsync">
+                <MudStack Row="@true">
+                    <MudIcon Icon="@Icons.Material.Filled.Add"/>
+                    <MudText Typo="Typo.body1">Создать команду</MudText>
+                </MudStack>
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+}
+@if (_teams != null && _teams.Count != 0)
+{
+    <MudStack Row="@true" Class="mt-6">
+        <MudText Typo="Typo.h6">Мои команды</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClickAsync">
+            <MudStack Row="@true">
+                <MudIcon Icon="@Icons.Material.Filled.Add"/>
+                <MudText Typo="Typo.body1">Создать команду</MudText>
+            </MudStack>
+        </MudButton>
+    </MudStack>
+    <MudTable Items="_teams" T="TeamDTO" Class="mt-6">
+        <HeaderContent>
+            <MudTh>Команда</MudTh>
+            <MudTh>Игра</MudTh>
+            <MudTh>Количество игроков</MudTh>
+            <MudTh>Роль</MudTh>
+            <MudTh/>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Title</MudTd>
+            <MudTd>
+                <MudStack Row="@true">
+                    <MudIcon Icon="@Icons.Custom.Brands.Steam"/>
+                    <MudText Typo="Typo.body1">@context.GameTitle</MudText>
+                </MudStack>
+            </MudTd>
+            <MudTd>5</MudTd>
+            <MudTd>@context.Role</MudTd>
+            <MudTd>
+                <MudButton Variant="Variant.Filled">
+                    Редактировать
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}

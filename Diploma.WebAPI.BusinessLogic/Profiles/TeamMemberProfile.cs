@@ -8,6 +8,9 @@ public class TeamMemberProfile : Profile
 {
     public TeamMemberProfile()
     {
-        CreateMap<TeamMember, TeamMemberDTO>();
+        CreateMap<TeamMember, TeamMemberDTO>()
+            .ForMember(
+                dto => dto.FullName,
+                cfg => cfg.MapFrom(member => $@"{member.User.Name} {member.User.UserName} {member.User.Surname}"));
     }
 }

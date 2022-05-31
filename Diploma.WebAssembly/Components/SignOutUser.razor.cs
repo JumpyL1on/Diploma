@@ -10,7 +10,8 @@ public partial class SignOutUser
 
     protected override async Task OnInitializedAsync()
     {
-        await UserService.SignOutAsync();
+        await UserService.SignOutUserAsync();
+        
         NavigationManager.NavigateTo("/", true);
     }
 }

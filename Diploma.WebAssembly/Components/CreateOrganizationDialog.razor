@@ -1,0 +1,18 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudForm @ref="@_form">
+            <MudStack>
+                <MudTextField @bind-Value="_request.Title"
+                              Label="Название организации*"
+                              Placeholder="Введите название"
+                              Validation="@((string title) => OrganizationValidationService.ValidateTitle(title))"/>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="OnClickAsync"
+                           Class="mt-6">
+                    <MudText Typo="Typo.body1">Создать организацию</MudText>
+                </MudButton>
+            </MudStack>
+        </MudForm>
+    </DialogContent>
+</MudDialog>

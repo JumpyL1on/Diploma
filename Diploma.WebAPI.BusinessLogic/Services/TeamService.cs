@@ -1,5 +1,5 @@
-﻿using Diploma.Common.DTOs;
-using Diploma.Common.Helpers;
+﻿using AutoMapper;
+using Diploma.Common.Exceptions;
 using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.DataAccess;
@@ -10,24 +10,31 @@ namespace Diploma.WebAPI.BusinessLogic.Services;
 
 public class TeamService : ITeamService
 {
-    public TeamService(AppDbContext appDbContext)
+    private readonly AppDbContext _dbContext;
+    private readonly IMapper _mapper;
+    
+    public TeamService(AppDbContext dbContext, IMapper mapper)
     {
-        AppDbContext = appDbContext;
+        _dbContext = dbContext;
+        _mapper = mapper;
     }
 
-    private AppDbContext AppDbContext { get; }
-
-    public async Task<Result<object>> CreateAsync(CreateTeamRequest createTeam, Guid userId)
+    public async Task CreateAsync(CreateTeamRequest request, Guid userId)
     {
+        var gameId = await _dbContext.Games
+            .Where(x => x.Title == request.Game)
+            .Select(x => x.Id)
+            .SingleOrDefaultAsync();
+        
         var team = new Team
         {
-            Title = createTeam.Title,
-            Tag = createTeam.Tag
+            Title = request.Title,
+            GameId = gameId
         };
 
-        AppDbContext.Teams.Add(team);
+        _dbContext.Teams.Add(team);
 
-        await AppDbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
 
         var teamMember = new TeamMember
         {
@@ -36,54 +43,25 @@ public class TeamService : ITeamService
             TeamId = team.Id
         };
 
-        AppDbContext.TeamMembers.Add(teamMember);
+        _dbContext.TeamMembers.Add(teamMember);
 
-        await AppDbContext.SaveChangesAsync();
-
+        await _dbContext.SaveChangesAsync();
         //await UserManager<>.AddClaimAsync(request.AppUser, new Claim("Role", "Owner"));
         //await DbContext.SaveChangesAsync(cancellationToken);
-        return new CreatedResult<object>();
     }
 
-    public async Task<Result<TeamDTO>> GetByUserId(Guid userId)
+    public async Task DeleteAsync(Guid id, Guid userId)
     {
-        var team = await AppDbContext.Teams
-            .Where(team => team.TeamMembers.Any(teamMember => teamMember.UserId == userId))
-            .Select(team => new TeamDTO
-            {
-                Id = team.Id,
-                Title = team.Title,
-                TeamMembers = team.TeamMembers
-                    .Select(teamMember => new TeamMemberDTO
-                    {
-                        FullName = $@"{teamMember.User.Name} {teamMember.User.UserName} {teamMember.User.Surname}",
-                        Role = teamMember.Role
-                    })
-                    .ToList()
-            })
-            .SingleOrDefaultAsync();
-
-        if (team == null)
-        {
-            return new NotFoundResult<TeamDTO>("Пользователь не состоит в этой команде");
-        }
-
-        return new OkResult<TeamDTO>(team);
-    }
-
-    public async Task<Result<object>> DeleteAsync(Guid id, Guid userId)
-    {
-        var team = await AppDbContext.Teams
+        var team = await _dbContext.Teams
             .SingleOrDefaultAsync(team => team.Id == id);
 
         if (team == null)
         {
-            return new UnprocessableEntityResult<object>("Команды не существует");
+            throw new BusinessException("Команды не существует");
         }
 
-        AppDbContext.Teams.Remove(team);
+        _dbContext.Teams.Remove(team);
 
-        await AppDbContext.SaveChangesAsync();
-        return new NoContentResult<object>();
+        await _dbContext.SaveChangesAsync();
     }
 }

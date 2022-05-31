@@ -1,8 +1,6 @@
-﻿using Diploma.Common.Helpers;
-
-namespace Diploma.WebAPI.BusinessLogic.Interfaces;
+﻿namespace Diploma.WebAPI.BusinessLogic.Interfaces;
 
 public interface IParticipantService
 {
-    public Task<Result<object>> CreateParticipantAsync(Guid tournamentId, Guid userId);
+    public Task CreateParticipantAsync(Guid tournamentId, Guid userId);
 }

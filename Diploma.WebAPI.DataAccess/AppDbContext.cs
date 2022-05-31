@@ -8,6 +8,16 @@ namespace Diploma.WebAPI.DataAccess;
 
 public class AppDbContext : IdentityUserContext<User, Guid>
 {
+    public DbSet<Game> Games { get; set; }
+    public DbSet<Match> Matches { get; set; }
+    public DbSet<Organization> Organizations { get; set; }
+    public DbSet<OrganizationMember> OrganizationMembers { get; set; }
+    public DbSet<Participant> Participants { get; set; }
+    public DbSet<Team> Teams { get; set; }
+    public DbSet<TeamMember> TeamMembers { get; set; }
+    public DbSet<Tournament> Tournaments { get; set; }
+    public DbSet<UserGame> UserGames { get; set; }
+
     private readonly ILoggerFactory _loggerFactory =
         LoggerFactory.Create(loggingBuilder =>
         {
@@ -15,17 +25,6 @@ public class AppDbContext : IdentityUserContext<User, Guid>
                 .AddConsole()
                 .SetMinimumLevel(LogLevel.Information);
         });
-
-    public AppDbContext()
-    {
-        //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-    }
-
-    public DbSet<Match> Matches { get; set; }
-    public DbSet<Participant> Participants { get; set; }
-    public DbSet<Team> Teams { get; set; }
-    public DbSet<TeamMember> TeamMembers { get; set; }
-    public DbSet<Tournament> Tournaments { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {

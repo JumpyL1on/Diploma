@@ -29,7 +29,7 @@ public class AppAuthenticationStateProvider : AuthenticationStateProvider
 
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             
-        var claims = JWTParser.ParseClaimsFromJWT(token);
+        var claims = JwtParser.ParseClaimsFromJwt(token);
 
         return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt")));
     }
@@ -38,7 +38,7 @@ public class AppAuthenticationStateProvider : AuthenticationStateProvider
     {
         var token = await LocalStorage.GetItemAsStringAsync("token");
         var state = new AuthenticationState(
-            new ClaimsPrincipal(new ClaimsIdentity(JWTParser.ParseClaimsFromJWT(token), "jwt")));
+            new ClaimsPrincipal(new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(token), "jwt")));
         NotifyAuthenticationStateChanged(Task.FromResult(state));
     }
 }

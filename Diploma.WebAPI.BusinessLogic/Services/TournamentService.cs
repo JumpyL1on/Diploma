@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Diploma.Common.DTOs;
-using Diploma.Common.Helpers;
+using Diploma.Common.Exceptions;
 using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.DataAccess;
@@ -17,34 +17,56 @@ public class TournamentService : ITournamentService
     private readonly IMapper _mapper;
     private readonly IBackgroundJobClient _backgroundJobClient;
 
-    public TournamentService(AppDbContext dbContext, IMapper mapper, IBackgroundJobClient backgroundJobClient)
+    public TournamentService(AppDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;
-        _backgroundJobClient = backgroundJobClient;
+        //_backgroundJobClient = backgroundJobClient;
     }
 
-    public async Task<Result<List<TournamentDTO>>> GetAll()
+    public async Task<List<TournamentDTO>> GetUpcomingTournaments()
     {
-        var tournaments = await _dbContext.Tournaments
-            .Where(tournament => tournament.Start < DateTime.Now)
+        return await _dbContext.Tournaments
+            .Where(tournament => tournament.Start < DateTime.UtcNow)
+            .OrderByDescending(tournament => tournament.CreatedAt)
             .ProjectTo<TournamentDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
-
-        return new OkResult<List<TournamentDTO>>(tournaments);
     }
 
-    public async Task<Result<TournamentDetailsDTO>> GetById(Guid id)
+    public async Task<List<TournamentDTO>> GetCurrentTournaments()
+    {
+        return await _dbContext.Tournaments
+            .Where(tournament => tournament.Start >= DateTime.UtcNow && tournament.End == null)
+            .OrderByDescending(tournament => tournament.CreatedAt)
+            .ProjectTo<TournamentDTO>(_mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
+    public async Task<List<TournamentDTO>> GetFinishedTournaments()
+    {
+        return await _dbContext.Tournaments
+            .Where(tournament => tournament.End == null)
+            .OrderByDescending(tournament => tournament.CreatedAt)
+            .ProjectTo<TournamentDTO>(_mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
+    public async Task<TournamentDetailsDTO> GetById(Guid id)
     {
         var tournament = await _dbContext.Tournaments
             .Where(tournament => tournament.Id == id)
             .ProjectTo<TournamentDetailsDTO>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
 
-        return new OkResult<TournamentDetailsDTO>(tournament);
+        if (tournament == null)
+        {
+            throw new NotFoundException("Турнира с таким идентификатором не существует");
+        }
+
+        return tournament;
     }
 
-    public async Task<Result<object>> CreateTournamentAsync(CreateTournamentRequest request)
+    public async Task CreateTournamentAsync(CreateTournamentRequest request)
     {
         var tournament = new Tournament
         {
@@ -67,9 +89,7 @@ public class TournamentService : ITournamentService
         _backgroundJobClient
             .Schedule<ITournamentService>(
                 tournamentService => tournamentService.BeginTournament(id, start, request.MaxParticipantsNumber),
-                start - DateTime.UtcNow);
-
-        return new CreatedResult<object>();
+                start - DateTime.Now);
     }
 
     public async Task BeginTournament(Guid id, DateTime start, int participantNumber)

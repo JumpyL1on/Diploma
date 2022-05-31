@@ -1,5 +1,4 @@
-﻿using Diploma.Common.Enums;
-using Diploma.Common.Requests;
+﻿using Diploma.Common.Requests;
 using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -8,16 +7,11 @@ namespace Diploma.WebAssembly.Components;
 
 public partial class SignInUser
 {
-    private SignInUserRequest Request { get; } = new();
+    [Inject] public IUserService UserService { get; set; }
+    private readonly SignInUserRequest _request = new();
     private bool IsPasswordVisible { get; set; }
     private InputType InputType { get; set; } = InputType.Password;
     private string InputIcon { get; set; } = Icons.Material.Filled.VisibilityOff;
-
-    [Inject] public NavigationManager NavigationManager { get; set; }
-
-    [Inject] public ISnackbar Snackbar { get; set; }
-
-    [Inject] public IUserService UserService { get; set; }
 
     private void Toggle()
     {
@@ -37,18 +31,6 @@ public partial class SignInUser
 
     private async Task OnValidSubmitAsync()
     {
-        var result = await UserService.SignInAsync(Request);
-        
-        if (result.ResultType == ResultType.Ok)
-        {
-            NavigationManager.NavigateTo("/", true);
-        }
-        else
-        {
-            foreach (var error in result.Errors)
-            {
-                Snackbar.Add(error, Severity.Error);
-            }
-        }
+        await UserService.SignInUserAsync(_request);
     }
 }

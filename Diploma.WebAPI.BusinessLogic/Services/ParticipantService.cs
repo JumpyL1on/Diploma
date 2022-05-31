@@ -1,5 +1,4 @@
-﻿using Diploma.Common.Helpers;
-using Diploma.WebAPI.BusinessLogic.Interfaces;
+﻿using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.DataAccess;
 using Diploma.WebAPI.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +14,7 @@ public class ParticipantService : IParticipantService
         _dbContext = dbContext;
     }
 
-    public async Task<Result<object>> CreateParticipantAsync(Guid tournamentId, Guid userId)
+    public async Task CreateParticipantAsync(Guid tournamentId, Guid userId)
     {
         var teamId = await _dbContext.TeamMembers
             .Where(teamMember => teamMember.UserId == userId)
@@ -38,7 +37,5 @@ public class ParticipantService : IParticipantService
         tournament.ParticipantsNumber++;
         
         await _dbContext.SaveChangesAsync();
-
-        return new CreatedResult<object>();
     }
 }

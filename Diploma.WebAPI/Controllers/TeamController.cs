@@ -8,35 +8,29 @@ namespace Diploma.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/teams")]
-[Authorize] 
+[Authorize]
 public class TeamController : ControllerBase
 {
+    private readonly ITeamService _teamService;
+
     public TeamController(ITeamService teamService)
     {
-        TeamService = teamService;
-    }
-
-    private ITeamService TeamService { get; }
-    
-    [HttpGet]
-    [Route("current")]
-    public async Task<IActionResult> GetCurrent()
-    {
-        var result = await TeamService.GetByUserId(this.GetUserId());
-        return this.FromResult(result);
+        _teamService = teamService;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(CreateTeamRequest createTeam)
+    public async Task<IActionResult> PostAsync(CreateTeamRequest request)
     {
-        var result = await TeamService.CreateAsync(createTeam, this.GetUserId());
-        return this.FromResult(result);
+        await _teamService.CreateAsync(request, this.GetUserId());
+
+        return Ok();
     }
 
     [HttpDelete, Route("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> DeleteByIdAsync(Guid id)
     {
-        var result = await TeamService.DeleteAsync(id, this.GetUserId());
-        return this.FromResult(result);
+        await _teamService.DeleteAsync(id, this.GetUserId());
+
+        return Ok();
     }
 }

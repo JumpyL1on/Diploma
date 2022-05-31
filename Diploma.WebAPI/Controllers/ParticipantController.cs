@@ -20,8 +20,8 @@ public class ParticipantController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateParticipantAsync(Guid tournamentId)
     {
-        var result = await _participantService.CreateParticipantAsync(tournamentId, this.GetUserId());
-        
-        return this.FromResult(result);
+        await _participantService.CreateParticipantAsync(tournamentId, this.GetUserId());
+
+        return Ok();
     }
 }
