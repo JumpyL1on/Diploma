@@ -203,6 +203,9 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.Property<DateTime?>("End")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("MaxParticipantsNumber")
                         .HasColumnType("integer");
 
@@ -212,12 +215,6 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.Property<int>("ParticipantsNumber")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("RegistrationEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("RegistrationStart")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<DateTime>("Start")
                         .HasColumnType("timestamp with time zone");
 
@@ -226,6 +223,8 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GameId");
 
                     b.HasIndex("OrganizationId");
 
@@ -258,10 +257,6 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -280,10 +275,6 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -484,11 +475,19 @@ namespace Diploma.WebAPI.DataAccess.Migrations
 
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Tournament", b =>
                 {
+                    b.HasOne("Diploma.WebAPI.DataAccess.Entities.Game", "Game")
+                        .WithMany("Tournaments")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Diploma.WebAPI.DataAccess.Entities.Organization", "Organization")
                         .WithMany("Tournaments")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Game");
 
                     b.Navigation("Organization");
                 });
@@ -496,7 +495,7 @@ namespace Diploma.WebAPI.DataAccess.Migrations
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.UserGame", b =>
                 {
                     b.HasOne("Diploma.WebAPI.DataAccess.Entities.Game", "Game")
-                        .WithMany("UserSteamGames")
+                        .WithMany("UserGames")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -543,7 +542,9 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 {
                     b.Navigation("Teams");
 
-                    b.Navigation("UserSteamGames");
+                    b.Navigation("Tournaments");
+
+                    b.Navigation("UserGames");
                 });
 
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Organization", b =>

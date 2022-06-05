@@ -9,6 +9,13 @@ public class TeamProfile : Profile
     public TeamProfile()
     {
         CreateMap<Team, TeamDTO>()
-            .ForMember(x => x.GameTitle, x => x.MapFrom(y => y.Game.Title));
+            .ForMember(
+                x => x.GameTitle,
+                x => x.MapFrom(y => y.Game.Title));
+
+        CreateMap<Team, TeamDetailsDTO>()
+            .ForMember(
+                x => x.GameTitle,
+                x => x.MapFrom(y => y.Game.Title));
     }
 }

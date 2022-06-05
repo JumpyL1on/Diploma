@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Diploma.Common.DTOs;
 using Diploma.Common.Exceptions;
 using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
@@ -17,6 +19,21 @@ public class TeamService : ITeamService
     {
         _dbContext = dbContext;
         _mapper = mapper;
+    }
+
+    public async Task<TeamDetailsDTO> GetByIdAsync(Guid id)
+    {
+        var team = await _dbContext.Teams
+            .Where(x => x.Id == id)
+            .ProjectTo<TeamDetailsDTO>(_mapper.ConfigurationProvider)
+            .SingleOrDefaultAsync();
+
+        if (team == null)
+        {
+            throw new NotFoundException("Команды с таким идентификатором не существует");
+        }
+
+        return team;
     }
 
     public async Task CreateAsync(CreateTeamRequest request, Guid userId)

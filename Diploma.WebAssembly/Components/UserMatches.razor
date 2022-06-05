@@ -1,0 +1,71 @@
+﻿@using Diploma.Common.DTOs
+@if (_matches == null)
+{
+    <Loading/>
+}
+else
+{
+    <MudText Typo="Typo.h6" Class="mt-6">
+        Мои матчи
+    </MudText>
+    if (_matches.Count == 0)
+    {
+        <MudCard Class="mt-6">
+            <MudCardContent Class="d-flex justify-center">
+                <MudText Typo="Typo.body1">
+                    Вы еще не участвовали в турнирах
+                </MudText>
+            </MudCardContent>
+            <MudCardActions Class="d-flex justify-center">
+                <MudButton Variant="Variant.Filled"
+                           Href="/"
+                           Color="Color.Primary">
+                    <MudText Typo="Typo.body1">Перейти к турнирам</MudText>
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+    else
+    {
+        <MudTable T="MatchDTO" Items="_matches" Class="mt-6">
+            <HeaderContent>
+                <MudTh>
+                    <MudText Typo="Typo.body1">
+                        Дата
+                    </MudText>
+                </MudTh>
+                <MudTh>
+                    <MudText Typo="Typo.body1">
+                        Матч
+                    </MudText>
+                </MudTh>
+                <MudTh/>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTh>
+                    <MudText Typo="Typo.body1">
+                        @context.Start.ToLocalTime().ToString("f")
+                    </MudText>
+                </MudTh>
+                <MudTd>
+                    <MudStack Row="@true">
+                        <MudText Typo="Typo.body1">
+                            @context.ParticipantA.TeamTitle
+                        </MudText>
+                        <MudText Typo="Typo.body1">
+                            @context.ParticipantAScore : @context.ParticipantBScore
+                        </MudText>
+                        <MudText Typo="Typo.body1">
+                            @context.ParticipantB.TeamTitle
+                        </MudText>
+                    </MudStack>
+                </MudTd>
+                <MudTd Class="d-flex justify-end">
+                    <MudLink Href="@($"/match/{context.Id}")">
+                        Подробнее
+                    </MudLink>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+}

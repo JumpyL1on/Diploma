@@ -22,9 +22,7 @@ public class UserService : IUserService
     {
         var user = new User
         {
-            Name = request.Name,
             UserName = request.UserName,
-            Surname = request.Surname,
             Email = request.Email
         };
 

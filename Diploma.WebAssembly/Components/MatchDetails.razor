@@ -1,0 +1,106 @@
+﻿@page "/match/{Id:guid}"
+@if (_match == null)
+{
+    <Loading/>
+}
+else
+{
+    <MudStack Row="@true" Spacing="10" Class="mt-6">
+        <MudText Typo="Typo.h4">
+            Матч
+        </MudText>
+        <MudLink Href="@($"/tournament/{_match.TournamentId}")"Class="mt-2">
+            <MudText Typo="Typo.body1">
+                Перейти к турниру
+            </MudText>
+        </MudLink>
+    </MudStack>
+    <MudStack Class="mt-6">
+        <MudText Typo="Typo.h2">
+            @_match.TournamentTitle
+        </MudText>
+        <SteamGame GameTitle="@_match.GameTitle"/>
+    </MudStack>
+    <MudPaper Class="pa-5 mt-10">
+        <MudGrid>
+            <MudItem xs="2">
+                <MudStack AlignItems="AlignItems.Start">
+                    @foreach (var e in _match.ParticipantA.TeamMembers)
+                    {
+                        <MudStack Row="@true" AlignItems="AlignItems.Center">
+                            <MudAvatar Size="Size.Large" Color="Color.Primary">
+                                <MudIcon Icon="@Icons.Filled.Person" Size="Size.Large"/>
+                            </MudAvatar>
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.body1">
+                                    @e.Nickname
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    @e.Role
+                                </MudText>
+                            </MudStack>
+                        </MudStack>
+                    }
+                </MudStack>
+            </MudItem>
+            <MudItem xs="2">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudAvatar Size="Size.Large" Color="Color.Secondary">
+                        <MudIcon Icon="@Icons.Filled.People" Size="Size.Large"/>
+                    </MudAvatar>
+                    <MudText Typo="Typo.body1">
+                        @_match.ParticipantA.TeamTitle
+                    </MudText>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="4">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.body1">
+                        Раунд @_match.Round
+                    </MudText>
+                    <MudText Typo="Typo.body1">
+                        Матч состоится как можно скорее
+                    </MudText>
+                    <MudText Typo="Typo.h6">
+                        @_match.ParticipantAScore : @_match.ParticipantBScore
+                    </MudText>
+                    <MudButton Variant="Variant.Filled" OnClick="OnClickAsync">
+                        <MudText Typo="Typo.body1">
+                            Присоединиться к игре
+                        </MudText>
+                    </MudButton>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="2">
+                <MudStack AlignItems="AlignItems.Center">
+                    <MudAvatar Size="Size.Large" Color="Color.Secondary">
+                        <MudIcon Icon="@Icons.Filled.People" Size="Size.Large"/>
+                    </MudAvatar>
+                    <MudText Typo="Typo.body1">
+                        @_match.ParticipantB.TeamTitle
+                    </MudText>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="2">
+                <MudStack AlignItems="AlignItems.End">
+                    @foreach (var e in _match.ParticipantB.TeamMembers)
+                    {
+                        <MudStack Row="@true" AlignItems="AlignItems.Center">
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.body1">
+                                    @e.Nickname
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    @e.Role
+                                </MudText>
+                            </MudStack>
+                            <MudAvatar Size="Size.Large" Color="Color.Primary">
+                                <MudIcon Icon="@Icons.Filled.Person" Size="Size.Large"/>
+                            </MudAvatar>
+                        </MudStack>
+                    }
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+}

@@ -2,8 +2,6 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Diploma.WebAssembly;
-using Diploma.WebAssembly.BusinessLogic.Services;
-using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 

@@ -1,0 +1,29 @@
+﻿@page "/organization/{Id:guid}"
+@using Diploma.Common.DTOs
+<MudText Typo="Typo.h5">
+    Состав
+</MudText>
+<MudTable Items="@(_organizationMembers)"
+          Loading="@(_organization == null)"
+          T="@((OrganizationMemberDTO, int))"
+          Class="mt-6">
+    <HeaderContent>
+        <MudTh>№</MudTh>
+        <MudTh>Никнейм на сайте</MudTh>
+        <MudTh>Роль</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Item2</MudTd>
+        <MudTd>@context.Item1.Nickname</MudTd>
+        <MudTd>@context.Item1.Role</MudTd>
+    </RowTemplate>
+</MudTable>
+<MudStack Row="@true" Class="mt-6">
+    <MudText Typo="Typo.h6">Турниры</MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClickAsync">
+        <MudStack Row="@true">
+            <MudIcon Icon="@Icons.Material.Filled.Add"/>
+            <MudText Typo="Typo.body1">Создать турнир</MudText>
+        </MudStack>
+    </MudButton>
+</MudStack>

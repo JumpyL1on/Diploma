@@ -9,6 +9,11 @@ public class ParticipantProfile : Profile
     public ParticipantProfile()
     {
         CreateMap<Participant, ParticipantDTO>()
-            .ForMember(dto => dto.TeamTitle, expression => expression.MapFrom(participant => participant.Team.Title));
+            .ForMember(
+                x => x.TeamTitle,
+                x => x.MapFrom(y => y.Team.Title))
+            .ForMember(
+                x => x.TeamMembers,
+                x => x.MapFrom(y => y.Team.TeamMembers));
     }
 }

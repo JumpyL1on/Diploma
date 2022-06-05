@@ -10,7 +10,13 @@ public class TeamMemberProfile : Profile
     {
         CreateMap<TeamMember, TeamMemberDTO>()
             .ForMember(
-                dto => dto.FullName,
-                cfg => cfg.MapFrom(member => $@"{member.User.Name} {member.User.UserName} {member.User.Surname}"));
+                dto => dto.Nickname,
+                cfg => cfg.MapFrom(member => member.User.UserName));
+
+        CreateMap<TeamMember, TeamDTO>()
+            .ForMember(x => x.Id, x => x.MapFrom(y => y.TeamId))
+            .ForMember(x => x.Role, x => x.MapFrom(y => y.Role))
+            .ForMember(x => x.Title, x => x.MapFrom(y => y.Team.Title))
+            .ForMember(x => x.GameTitle, x => x.MapFrom(y => y.Team.Game.Title));
     }
 }

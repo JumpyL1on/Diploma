@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNetCore.Components
+<MudDialog Class="overflow-y: scroll">
+    <DialogContent>
+        <MudForm @ref="@_form" Style="max-height: 600px; overflow-y: scroll">
+            <MudStack>
+                <MudTextField Label="Название турнира*"
+                              @bind-Value="_request.Title"
+                              Placeholder="Введите название"
+                              Validation="@((string title) => TournamentValidationService.ValidateTitle(title))"/>
+                <MudSelect Placeholder="Выберите игру"
+                           Label="Игра*"
+                           @bind-Value="_request.Game"
+                           Class="mt-6">
+                    <MudSelectItem Value="@("DOTA 2")">
+                        <MudStack Row="@true">
+                            <MudIcon Icon="@Icons.Custom.Brands.Steam"/>
+                            <MudText>DOTA 2</MudText>
+                        </MudStack>
+                    </MudSelectItem>
+                </MudSelect>
+                <MudSelect T="@int"
+                           @bind-Value="@_request.MaxParticipantsNumber"
+                           Placeholder="Выберите количество участников"
+                           Label="Количество участников*"
+                           Class="mt-6">
+                    <MudSelectItem Value="@(2)">
+                        <MudText Typo="Typo.body1">2</MudText>
+                    </MudSelectItem>
+                </MudSelect>
+                <MudSelect Placeholder="Выберите тип сетки"
+                           Label="Тип сетки*"
+                           T="@string"
+                           Class="mt-6"
+                           Value="@("Single Elimination")">
+                    <MudSelectItem Value="@("Single Elimination")">
+                            <MudText>Single Elimination</MudText>
+                    </MudSelectItem>
+                </MudSelect>
+                <MudSelect Placeholder="Выберите формат"
+                           Label="Формат*"
+                           T="@string"
+                           Class="mt-6"
+                           Value="@("5x5")">
+                    <MudSelectItem Value="@("5x5")">
+                        <MudText>5x5</MudText>
+                    </MudSelectItem>
+                </MudSelect>
+                <MudDatePicker @bind-Date="@_start"
+                               Label="Дата начала турнира"
+                               DisableToolbar="@true"/>
+                <MudTimePicker @bind-Time="@_timeStart"
+                               Label="Время начала турнира"
+                               DisableToolbar="@true"/>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="OnClickAsync"
+                           Class="mt-6">
+                    Создать турнир
+                </MudButton>
+            </MudStack>
+        </MudForm>
+    </DialogContent>
+</MudDialog>

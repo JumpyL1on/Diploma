@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Diploma.WebAPI.Controllers;
 
 [ApiController]
-[Route("api/matches")]
+[Route("api/tournaments/{tournamentId:guid}/matches")]
 [Authorize]
 public class MatchController : ControllerBase
 {
@@ -18,9 +18,15 @@ public class MatchController : ControllerBase
     }
 
     [HttpGet]
-    [Route("current")]
-    public async Task<IActionResult> GetCurrentMatch()
+    public async Task<IActionResult> GetAllAsync(Guid tournamentId)
     {
-        return Ok(await _matchService.GetCurrentMatch(this.GetUserId()));
+        return Ok(await _matchService.GetAllByTournamentId(tournamentId));
+    }
+
+    [HttpGet]
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id)
+    {
+        return Ok(await _matchService.GetById(id, this.GetUserId()));
     }
 }

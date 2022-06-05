@@ -13,6 +13,11 @@ public class CurrentUserService : ICurrentUserService
         _httpClient = httpClient;
     }
 
+    public async Task<List<TournamentDTO>> GetAllTournamentsAsync()
+    {
+        return await _httpClient.GetFromJsonAsync<List<TournamentDTO>>("users/current/tournaments");
+    }
+
     public async Task<List<TeamDTO>> GetAllTeamsAsync()
     {
         return await _httpClient.GetFromJsonAsync<List<TeamDTO>>("users/current/teams") ?? new List<TeamDTO>();
@@ -23,9 +28,19 @@ public class CurrentUserService : ICurrentUserService
         return await _httpClient.GetFromJsonAsync<List<GameDTO>>("users/current/games") ?? new List<GameDTO>();
     }
 
+    public async Task<List<MatchDTO>> GetAllMatchesAsync()
+    {
+        return await _httpClient.GetFromJsonAsync<List<MatchDTO>>("users/current/matches");
+    }
+
     public async Task<List<OrganizationDTO>> GetAllOrganizationsAsync()
     {
         return await _httpClient
             .GetFromJsonAsync<List<OrganizationDTO>>("users/current/organizations") ?? new List<OrganizationDTO>();
+    }
+
+    public async Task InviteToLobbyAsync()
+    {
+        await _httpClient.PostAsync("users/current/invite-to-lobby", null);
     }
 }

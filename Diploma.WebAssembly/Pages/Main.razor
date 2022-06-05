@@ -1,0 +1,12 @@
+﻿@page "/"
+<MudTabs Centered="@true" Outlined="@true" Color="@Color.Primary">
+    <MudTabPanel Text="Предстоящие">
+        <Tournaments Status="upcoming"/>
+    </MudTabPanel>
+    <MudTabPanel Text="Текущие">
+        <Tournaments Status="current"/>
+    </MudTabPanel>
+    <MudTabPanel Text="Завершенные">
+        <Tournaments Status="finished"/>
+    </MudTabPanel>
+</MudTabs>

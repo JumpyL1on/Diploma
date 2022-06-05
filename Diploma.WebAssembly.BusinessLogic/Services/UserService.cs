@@ -19,10 +19,15 @@ public class UserService : IUserService
 
     private HttpClient HttpClient { get; }
     private ILocalStorageService LocalStorage { get; }
-    
+
     public async Task SignUpUserAsync(SignUpUserRequest request)
     {
-        await HttpClient.PostAsJsonAsync("users/sign-up", request);
+        var response = await HttpClient.PostAsJsonAsync("users/sign-up", request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("user/sign-in");
+        }
     }
 
     public async Task SignInUserAsync(SignInUserRequest request)

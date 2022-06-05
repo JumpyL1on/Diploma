@@ -10,8 +10,8 @@ namespace Diploma.WebAPI.BusinessLogic.Services;
 public class TeamMemberService : ITeamMemberService
 {
     private readonly SteamGameClient _gameClient;
-    
-    public TeamMemberService(AppDbContext appDbContext/*, SteamGameClient gameClient*/)
+
+    public TeamMemberService(AppDbContext appDbContext /*, SteamGameClient gameClient*/)
     {
         AppDbContext = appDbContext;
         //_gameClient = gameClient;
@@ -19,13 +19,13 @@ public class TeamMemberService : ITeamMemberService
 
     private AppDbContext AppDbContext { get; }
 
-    public async Task CreateAsync(Guid userId, Guid teamId)
+    public async Task CreateAsync(Guid teamId, Guid userId)
     {
         var teamMember = new TeamMember
         {
             Role = "Игрок",
-            UserId = userId,
-            TeamId = teamId
+            TeamId = teamId,
+            UserId = userId
         };
 
         await AppDbContext.TeamMembers.AddAsync(teamMember);

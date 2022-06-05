@@ -4,6 +4,7 @@ using Diploma.Common.DTOs;
 using Diploma.Common.Exceptions;
 using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
+using Diploma.WebAPI.BusinessLogic.Steam;
 using Diploma.WebAPI.DataAccess;
 using Diploma.WebAPI.DataAccess.Entities;
 using Hangfire;
@@ -16,18 +17,24 @@ public class TournamentService : ITournamentService
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly SteamGameClient _steamGameClient;
 
-    public TournamentService(AppDbContext dbContext, IMapper mapper)
+    public TournamentService(
+        AppDbContext dbContext,
+        IMapper mapper,
+        IBackgroundJobClient backgroundJobClient,
+        SteamGameClient steamGameClient)
     {
         _dbContext = dbContext;
         _mapper = mapper;
-        //_backgroundJobClient = backgroundJobClient;
+        _backgroundJobClient = backgroundJobClient;
+        _steamGameClient = steamGameClient;
     }
 
     public async Task<List<TournamentDTO>> GetUpcomingTournaments()
     {
         return await _dbContext.Tournaments
-            .Where(tournament => tournament.Start < DateTime.UtcNow)
+            .Where(tournament => DateTime.UtcNow < tournament.Start)
             .OrderByDescending(tournament => tournament.CreatedAt)
             .ProjectTo<TournamentDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
@@ -36,7 +43,7 @@ public class TournamentService : ITournamentService
     public async Task<List<TournamentDTO>> GetCurrentTournaments()
     {
         return await _dbContext.Tournaments
-            .Where(tournament => tournament.Start >= DateTime.UtcNow && tournament.End == null)
+            .Where(tournament => DateTime.UtcNow >= tournament.Start && tournament.End == null)
             .OrderByDescending(tournament => tournament.CreatedAt)
             .ProjectTo<TournamentDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
@@ -45,13 +52,13 @@ public class TournamentService : ITournamentService
     public async Task<List<TournamentDTO>> GetFinishedTournaments()
     {
         return await _dbContext.Tournaments
-            .Where(tournament => tournament.End == null)
+            .Where(tournament => tournament.End != null)
             .OrderByDescending(tournament => tournament.CreatedAt)
             .ProjectTo<TournamentDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
     }
 
-    public async Task<TournamentDetailsDTO> GetById(Guid id)
+    public async Task<TournamentDetailsDTO> GetById(Guid id, Guid userId)
     {
         var tournament = await _dbContext.Tournaments
             .Where(tournament => tournament.Id == id)
@@ -62,20 +69,34 @@ public class TournamentService : ITournamentService
         {
             throw new NotFoundException("Турнира с таким идентификатором не существует");
         }
+        
+        tournament.IsRegistered = await _dbContext.Participants
+            .Where(x => x.TournamentId == id)
+            .AnyAsync(x => x.Team.TeamMembers.Any(y => y.UserId == userId));
 
         return tournament;
     }
 
-    public async Task CreateTournamentAsync(CreateTournamentRequest request)
+    public async Task CreateTournamentAsync(CreateTournamentRequest request, Guid userId)
     {
+        var gameId = await _dbContext.Games
+            .Where(x => x.Title == request.Game)
+            .Select(x => x.Id)
+            .SingleOrDefaultAsync();
+
+        var organizationId = await _dbContext.OrganizationMembers
+            .Where(x => x.UserId == userId)
+            .Select(x => x.OrganizationId)
+            .SingleOrDefaultAsync();
+        
         var tournament = new Tournament
         {
             Title = request.Title,
             MaxParticipantsNumber = request.MaxParticipantsNumber,
             CreatedAt = DateTime.UtcNow,
-            RegistrationStart = request.RegistrationStart,
-            RegistrationEnd = request.RegistrationEnd,
-            Start = request.Start
+            GameId = gameId,
+            OrganizationId = organizationId,
+            Start = request.Start.ToUniversalTime().Add(request.TimeStart)
         };
 
         _dbContext.Tournaments.Add(tournament);
@@ -89,7 +110,7 @@ public class TournamentService : ITournamentService
         _backgroundJobClient
             .Schedule<ITournamentService>(
                 tournamentService => tournamentService.BeginTournament(id, start, request.MaxParticipantsNumber),
-                start - DateTime.Now);
+                start - DateTime.UtcNow);
     }
 
     public async Task BeginTournament(Guid id, DateTime start, int participantNumber)
@@ -102,8 +123,6 @@ public class TournamentService : ITournamentService
         var number = 1;
 
         var random = new Random();
-
-        var matches = new List<Match>();
         
         for (var i = 0; i < participantNumber / 2; i++)
         {
@@ -113,23 +132,24 @@ public class TournamentService : ITournamentService
 
             var match = new Match
             {
+                Id = Guid.NewGuid(),
                 Start = start,
                 Round = 1,
                 Order = number++,
                 ParticipantAId = participantAId,
-                ParticipantBId = participantBId
+                ParticipantBId = participantBId,
+                TournamentId = id
             };
-            
-            matches.Add(match);
 
+            _backgroundJobClient.Enqueue<IMatchService>(x => x.CreateAsync());
+            
+            var matchId = match.Id;
+            
+            _backgroundJobClient.Schedule<IMatchService>(
+                x => x.StartAsync(matchId),
+                TimeSpan.FromMinutes(2));
+            
             _dbContext.Matches.Add(match);
-        }
-
-        await _dbContext.SaveChangesAsync();
-
-        foreach (var match in matches)
-        {
-            
         }
         
         participantNumber /= 2;
@@ -140,14 +160,15 @@ public class TournamentService : ITournamentService
             {
                 var match = new Match
                 {
-                    Start = start,
+                    Start = null,
                     Round = i,
                     Order = order++,
                     ParticipantAId = null,
-                    ParticipantBId = null
+                    ParticipantBId = null,
+                    TournamentId = id
                 };
 
-                _dbContext.Add(match);
+                _dbContext.Matches.Add(match);
             }
 
             i++;

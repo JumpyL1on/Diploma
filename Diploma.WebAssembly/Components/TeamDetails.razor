@@ -1,0 +1,39 @@
+﻿@page "/team/{Id:guid}"
+@using Diploma.Common.DTOs
+<MudText Typo="Typo.h6">
+    Пригласите игроков
+</MudText>
+<MudTextField Label="Ссылка-приглашение"
+              Variant="Variant.Outlined"
+              ReadOnly="@true"
+              Value="@($"https://localhost:7073/team/{Id}/invite")"
+              Class="mt-6"/>
+<MudText Typo="Typo.h5" Class="mt-6">
+    Состав
+</MudText>
+<MudTable Items="@(_teamMembers)"
+          Loading="@(_team == null)"
+          T="@((TeamMemberDTO, int))"
+          Class="mt-6">
+    <HeaderContent>
+        <MudTh>№</MudTh>
+        <MudTh>Никнейм на сайте</MudTh>
+        <MudTh>Никнейм в @(_team?.GameTitle)</MudTh>
+        <MudTh>Роль</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Item2</MudTd>
+        @if (context.Item1 != null)
+        {
+            <MudTd>@context.Item1.Nickname</MudTd>
+            <MudTd>@context.Item1.Nickname</MudTd>
+            <MudTd>@context.Item1.Role</MudTd>
+        }
+        else
+        {
+            <MudTd>Пустой слот</MudTd>
+            <MudTd>&ndash;</MudTd>
+            <MudTd>&ndash;</MudTd>
+        }
+    </RowTemplate>
+</MudTable>

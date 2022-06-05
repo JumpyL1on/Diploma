@@ -8,12 +8,12 @@ public partial class SteamGameClient
 {
     public sealed class CacheUnsubscribedCallback : CallbackMsg
     {
-        public CMsgSOCacheUnsubscribed result;
-
         internal CacheUnsubscribedCallback(CMsgSOCacheUnsubscribed msg)
         {
-            result = msg;
+            Msg = msg;
         }
+
+        public CMsgSOCacheUnsubscribed Msg { get; }
     }
 
     public sealed class ConnectionStatusCallback : CallbackMsg
@@ -25,29 +25,32 @@ public partial class SteamGameClient
             result = msg;
         }
     }
-    
+
     public sealed class PracticeLobbyLeaveCallback : CallbackMsg
     {
-        public CMsgSOCacheUnsubscribed result;
-
-        internal PracticeLobbyLeaveCallback(CMsgSOCacheUnsubscribed msg)
+        internal PracticeLobbyLeaveCallback(CMsgSOCacheUnsubscribed msg, EMatchOutcome matchOutcome)
         {
-            result = msg;
+            Msg = msg;
+            MatchOutcome = matchOutcome;
         }
+
+        public CMsgSOCacheUnsubscribed Msg { get; }
+        public Guid MatchId { get; set; }
+        public EMatchOutcome MatchOutcome { get; }
     }
-    
+
     public sealed class PracticeLobbySnapshotCallback : CallbackMsg
     {
-        public CSODOTALobby lobby;
-        public CSODOTALobby? oldLobby;
-
         internal PracticeLobbySnapshotCallback(CSODOTALobby msg, CSODOTALobby? oldLob)
         {
-            lobby = msg;
-            oldLobby = oldLob;
+            Lobby = msg;
+            OldLobby = oldLob;
         }
+
+        public CSODOTALobby Lobby { get; }
+        public CSODOTALobby? OldLobby { get; }
     }
-    
+
     public sealed class GCWelcomeCallback : CallbackMsg
     {
         public uint Version;

@@ -4,7 +4,7 @@ using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Diploma.WebAssembly.Components;
+namespace Diploma.WebAssembly.Components.Dialogs;
 
 public partial class CreateTeamDialog
 {

@@ -1,69 +1,85 @@
-﻿@page "/tournaments/{Id:guid}"
-@attribute [Authorize]
-<MudTabs>
-    <MudTabPanel Text="Обзор">
-        <MudGrid>
-            <MudItem xs="8">
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">ОБ ЭТОМ ТУРНИРЕ</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
+﻿@page "/tournament/{Id:guid}"
+@if (_tournament != null)
+{
+    <MudStack Justify="Justify.Center" Row="@true" Spacing="10">
+        <MudStack Row="@true">
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                Турнир
+            </MudText>
+            <MudText Typo="Typo.body1">
+                @_tournament.Title
+            </MudText>
+        </MudStack>
+        <MudStack Row="@true">
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                Игра
+            </MudText>
+            <MudIcon Icon="@Icons.Custom.Brands.Steam"/>
+            <MudText Typo="Typo.body1">
+                @_tournament.GameTitle
+            </MudText>
+        </MudStack>
+        <MudStack Row="@true">
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                Формат
+            </MudText>
+            <MudText Typo="Typo.body1">
+                Single Elimination, 5x5
+            </MudText>
+        </MudStack>
+        <MudStack Row="@true">
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                Участники
+            </MudText>
+            <MudText Typo="Typo.body1">
+                @($"{_tournament.ParticipantsNumber}/{_tournament.MaxParticipantsNumber}")
+            </MudText>
+        </MudStack>
+        <MudStack Row="@true">
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                Организатор
+            </MudText>
+            <MudText Typo="Typo.body1">
+                @_tournament.OrganizationTitle
+            </MudText>
+        </MudStack>
+    </MudStack>
+    <MudTabs Centered="@true" Class="mt-6" Outlined="@true" Color="Color.Primary">
+        <MudTabPanel Text="Обзор">
+            @if (_tournament.IsRegistered)
+            {
+                <MudCard Class="d-flex justify-center mt-6">
                     <MudCardContent>
-                        <MudText>Название: @tournamentDetails.Title</MudText>
-                        <MudText>Организован создателем</MudText>
-                        <MudText>Текущий статус: ожидается</MudText>
-                        <MudText Typo="Typo.subtitle1">Режим игры: 5v5 Captains mode</MudText>
+                        <MudText Typo="Typo.body1">
+                            Заявка вашей команды на регистрацию в турнире одобрена.
+                        </MudText>
                     </MudCardContent>
                 </MudCard>
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">РАСПИСАНИЕ</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudText>Запись начинается @tournamentDetails.RegistrationStart.ToString("f")</MudText>
-                        <MudText>Запись заканчивается @tournamentDetails.RegistrationStart.ToString("f")</MudText>
-                        <MudText>Начинается @tournamentDetails.Start.ToString("f")</MudText>
-                        <MudDivider></MudDivider>
-                        <MudText>Число групп: 1</MudText>
-                        <MudText>Количество раундов: @Math.Log2(tournamentDetails.ParticipantsNumber)</MudText>
-                        <MudText>Раунд 1: @tournamentDetails.Start.ToString("f")</MudText>
-                        @for (var i = 2; i <= Math.Log2(tournamentDetails.ParticipantsNumber); i++)
-                        {
-                            var i1 = i;
-                            <MudText>Раунд @i1: Как можно скорее</MudText>
-                        }
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-            <MudItem xs="4">
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">ПРИСОЕДИНИТЬСЯ К ТУРНИРУ</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudText Typo="Typo.subtitle1">
-                            Регистрация заканчивается @tournamentDetails.RegistrationEnd.ToString("f")
-                        </MudText>
-                        <MudText Typo="Typo.subtitle1">
-                            Команды @($"{tournamentDetails.CurrentParticipantsNumber}/{tournamentDetails.ParticipantsNumber}")
-                        </MudText>
-                    </MudCardContent>
+            }
+            else
+            {
+                <MudCard Class="d-flex justify-center mt-6">
                     <MudCardActions>
-                        <MudButton Variant="Variant.Filled" OnClick="JoinTournamentAsync">
-                            УЧАСТВОВАТЬ В ТУРНИРЕ
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OnClickAsync">
+                            <MudText Typo="Typo.body1">
+                                Регистрация
+                            </MudText>
                         </MudButton>
                     </MudCardActions>
                 </MudCard>
-            </MudItem>
-        </MudGrid>
-    </MudTabPanel>
-    <MudTabPanel Text="Команды">
-        
-    </MudTabPanel>
-</MudTabs>
+            }
+        </MudTabPanel>
+        <MudTabPanel Text="Расписание">
+            <TournamentSchedule TournamentId="Id"/>
+        </MudTabPanel>
+        <MudTabPanel Text="Участники">
+            <MudText Typo="Typo.body1" Class="mt-6 d-flex justify-center">
+                Нет участников в турнире
+            </MudText>
+        </MudTabPanel>
+    </MudTabs>
+}
+else
+{
+    <Loading/>
+}

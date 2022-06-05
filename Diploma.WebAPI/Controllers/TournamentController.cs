@@ -1,5 +1,6 @@
 ﻿using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
+using Diploma.WebAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,13 +34,13 @@ public class TournamentController : ControllerBase
     [Route("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        return Ok(await _tournamentService.GetById(id));
+        return Ok(await _tournamentService.GetById(id, this.GetUserId()));
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateTournamentAsync(CreateTournamentRequest request)
     {
-        await _tournamentService.CreateTournamentAsync(request);
+        await _tournamentService.CreateTournamentAsync(request, this.GetUserId());
 
         return Ok();
     }

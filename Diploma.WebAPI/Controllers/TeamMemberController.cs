@@ -10,17 +10,17 @@ namespace Diploma.WebAPI.Controllers;
 [Authorize]
 public class TeamMemberController : ControllerBase
 {
+    private readonly ITeamMemberService _teamMemberService;
+
     public TeamMemberController(ITeamMemberService teamMemberService)
     {
-        TeamMemberService = teamMemberService;
+        _teamMemberService = teamMemberService;
     }
-
-    private ITeamMemberService TeamMemberService { get; }
 
     [HttpPost]
     public async Task<IActionResult> Post(Guid teamId)
     {
-        await TeamMemberService.CreateAsync(this.GetUserId(), teamId);
+        await _teamMemberService.CreateAsync(teamId, this.GetUserId());
 
         return Ok();
     }
@@ -29,7 +29,7 @@ public class TeamMemberController : ControllerBase
     [Route("{id:guid}")]
     public async Task<IActionResult> Delete(Guid teamId, Guid id)
     {
-        await TeamMemberService.DeleteAsync(id, this.GetUserId());
+        await _teamMemberService.DeleteAsync(id, this.GetUserId());
 
         return Ok();
     }

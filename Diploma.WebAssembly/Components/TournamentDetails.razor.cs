@@ -7,16 +7,21 @@ namespace Diploma.WebAssembly.Components;
 public partial class TournamentDetails
 {
     [Parameter] public Guid Id { get; set; }
-    [Inject] public ITournamentService TournamentService { get; set; }
-    private TournamentDetailsDTO tournamentDetails;
+    [Inject] public ITournamentService TournamentService { get; set; } = null!;
+    [Inject] public IParticipantService ParticipantService { get; set; } = null!;
+    private TournamentDetailsDTO? _tournament;
 
-    private async Task JoinTournamentAsync()
+    private async Task OnClickAsync()
     {
+        await ParticipantService.CreateAsync(Id);
+
+        _tournament!.IsRegistered = true;
         
+        Console.WriteLine(_tournament.IsRegistered);
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
-        tournamentDetails = await TournamentService.GetById(Id);
+        _tournament = await TournamentService.GetById(Id);
     }
 }

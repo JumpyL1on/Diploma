@@ -9,5 +9,7 @@ public class OrganizationProfile : Profile
     public OrganizationProfile()
     {
         CreateMap<Organization, OrganizationDTO>();
+
+        CreateMap<Organization, OrganizationDetailsDTO>();
     }
 }

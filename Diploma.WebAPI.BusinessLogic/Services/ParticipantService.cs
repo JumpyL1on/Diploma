@@ -17,8 +17,8 @@ public class ParticipantService : IParticipantService
     public async Task CreateParticipantAsync(Guid tournamentId, Guid userId)
     {
         var teamId = await _dbContext.TeamMembers
-            .Where(teamMember => teamMember.UserId == userId)
-            .Select(teamMember => teamMember.TeamId)
+            .Where(x => x.UserId == userId)
+            .Select(x => x.TeamId)
             .SingleOrDefaultAsync();
 
         var participant = new Participant
@@ -28,8 +28,6 @@ public class ParticipantService : IParticipantService
         };
 
         _dbContext.Participants.Add(participant);
-
-        await _dbContext.SaveChangesAsync();
 
         var tournament = await _dbContext.Tournaments
             .SingleAsync(tournament => tournament.Id == tournamentId);

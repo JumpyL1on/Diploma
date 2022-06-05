@@ -15,7 +15,6 @@ public partial class SignUpUser
     private string _inputIcon = Icons.Material.Filled.VisibilityOff;
     [Inject] public IUserService UserService { get; set; } = null!;
     [Inject] public IUserValidationService UserValidationService { get; set; } = null!;
-    [Inject] public NavigationManager NavManager { get; set; } = null!;
 
     private void Toggle()
     {
@@ -40,8 +39,6 @@ public partial class SignUpUser
         if (_mudForm.IsValid)
         {
             await UserService.SignUpUserAsync(_request);
-
-            NavManager.NavigateTo("user/sign-in");
         }
     }
 }

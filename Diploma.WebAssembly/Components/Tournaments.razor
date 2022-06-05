@@ -1,16 +1,4 @@
-﻿@page "/"
-@using Diploma.Common.DTOs
-<MudTabs Centered="@true" Outlined="@true" Color="@Color.Primary">
-    <MudTabPanel Text="Предстоящие">
-        
-    </MudTabPanel>
-    <MudTabPanel Text="Текущие">
-            
-    </MudTabPanel>
-    <MudTabPanel Text="Завершенные">
-        
-    </MudTabPanel>
-</MudTabs>
+﻿@using Diploma.Common.DTOs
 <MudTable Items="_tournaments" Loading="@(_tournaments == null)" T="TournamentDTO" Class="mt-6">
     <HeaderContent>
         <MudTh>Турнир</MudTh>
@@ -22,19 +10,28 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd>
-            <MudLink>@context.Title</MudLink>
+            <MudLink Href="@($"/tournament/{context.Id}")">@context.Title</MudLink>
         </MudTd>
-        <MudTd>@context.Start</MudTd>
+        <MudTd>@context.Start.ToLocalTime()</MudTd>
         <MudTd>Single Elimination</MudTd>
-        <MudTd>5v5 Captain mode</MudTd>
-        <MudTd>@($"{context.CurrentParticipantsNumber}/{context.ParticipantsNumber}")</MudTd>
-        @if (DateTime.UtcNow >= context.Start)
+        <MudTd>5x5</MudTd>
+        <MudTd>@($"{context.ParticipantsNumber}/{context.MaxParticipantsNumber}")</MudTd>
+        @switch (Status)
         {
-            <MudTd>НАЧАТО</MudTd>
-        }
-        else
-        {
-            <MudTd>НАЧИНАЕТСЯ @context.Start.ToString("f")</MudTd>
+            case "upcoming":
+                <MudTd>
+                    <MudText Typo="Typo.body1">
+                        До окончания регистрации @((context.Start - DateTime.UtcNow).ToString("g"))
+                    </MudText>
+                </MudTd>
+                break;
+            case "current":
+                <MudTd>
+                    <MudText Typo="Typo.body1">
+                        Закончится как можно скорее
+                    </MudText>
+                </MudTd>
+                break;
         }
     </RowTemplate>
 </MudTable>

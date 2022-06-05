@@ -22,15 +22,9 @@
 }
 @if (_organizations != null && _organizations.Count != 0)
 {
-    <MudStack Row="@true" Class="mt-6">
-        <MudText Typo="Typo.h6">Мои организации</MudText>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClickAsync">
-            <MudStack Row="@true">
-                <MudIcon Icon="@Icons.Material.Filled.Add"/>
-                <MudText Typo="Typo.body1">Создать организацию</MudText>
-            </MudStack>
-        </MudButton>
-    </MudStack>
+    <MudText Typo="Typo.h6" Class="mt-6">
+        Мои организации
+    </MudText>
     <MudTable Items="_organizations" T="OrganizationDTO" Class="mt-6">
         <HeaderContent>
             <MudTh>Организация</MudTh>
@@ -38,12 +32,25 @@
             <MudTh/>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>@context.Title</MudTd>
-            <MudTd>@context.Role</MudTd>
             <MudTd>
-                <MudButton Variant="Variant.Filled">
-                    Редактировать
-                </MudButton>
+                <MudLink Href="@($"/organization/{context.Id}")">
+                    @context.Title
+                </MudLink>
+            </MudTd>
+            <MudTd>@context.Role</MudTd>
+            <MudTd Class="d-flex justify-end">
+                @if (context.Role == "Владелец")
+                {
+                    <MudButton Variant="Variant.Filled">
+                        <MudText Typo="Typo.body1">Удалить организацию</MudText>
+                    </MudButton>
+                }
+                @if (context.Role == "Судья")
+                {
+                    <MudButton Variant="Variant.Filled">
+                        <MudText Typo="Typo.body1">Покинуть организацию</MudText>
+                    </MudButton>
+                }
             </MudTd>
         </RowTemplate>
     </MudTable>

@@ -15,6 +15,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICurrentUserService, CurrentUserService>()
             .AddScoped<IMatchService, MatchService>()
             .AddScoped<IOrganizationService, OrganizationService>()
+            .AddScoped<IParticipantService, ParticipantService>()
+            .AddScoped<ITeamMemberService, TeamMemberService>()
             .AddScoped<ITeamService, TeamService>()
             .AddScoped<ITournamentService, TournamentService>()
             .AddScoped<IUserService, UserService>()
@@ -26,6 +28,7 @@ public static class ServiceCollectionExtensions
         services
             .AddTransient<IOrganizationValidationService, OrganizationValidationService>()
             .AddTransient<ITeamValidationService, TeamValidationService>()
+            .AddTransient<ITournamentValidationService, TournamentValidationService>()
             .AddTransient<IUserValidationService, UserValidationService>();
     }
 }

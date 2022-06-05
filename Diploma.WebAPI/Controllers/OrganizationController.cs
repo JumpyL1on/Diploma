@@ -18,6 +18,13 @@ public class OrganizationController : ControllerBase
         _organizationService = organizationService;
     }
 
+    [HttpGet]
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id)
+    {
+        return Ok(await _organizationService.GetByIdAsync(id));
+    }
+
     [HttpPost]
     public async Task<IActionResult> PostAsync(CreateOrganizationRequest request)
     {

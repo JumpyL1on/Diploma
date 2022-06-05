@@ -2,6 +2,8 @@
 using Diploma.Common.Services;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.BusinessLogic.Services;
+using Diploma.WebAPI.BusinessLogic.Steam;
+using SteamKit2;
 
 namespace Diploma.WebAPI.Extensions;
 
@@ -19,9 +21,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<ITeamService, TeamService>()
             .AddScoped<ITournamentService, TournamentService>()
             .AddScoped<IUserGameService, UserGameService>()
-            .AddScoped<IUserService, UserService>();
-
-        services.AddTransient<IJwtService, JwtService>();
+            .AddScoped<IUserService, UserService>()
+            .AddTransient<IJwtService, JwtService>();
     }
 
     public static void AddValidationServices(this IServiceCollection services)
@@ -29,6 +30,20 @@ public static class ServiceCollectionExtensions
         services
             .AddTransient<IOrganizationValidationService, OrganizationValidationService>()
             .AddTransient<ITeamValidationService, TeamValidationService>()
+            .AddTransient<ITournamentValidationService, TournamentValidationService>()
             .AddTransient<IUserValidationService, UserValidationService>();
+    }
+
+    public static SteamGameClient AddSteamGameClient(this IServiceCollection services)
+    {
+        var steamClient = new SteamClient();
+
+        steamClient.AddHandler(new SteamGameClient(steamClient));
+
+        var steamGameClient = steamClient.GetHandler<SteamGameClient>();
+
+        services.AddSingleton(steamGameClient!);
+
+        return steamGameClient!;
     }
 }

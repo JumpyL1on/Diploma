@@ -1,5 +1,6 @@
 ﻿using Diploma.Common.DTOs;
 using Diploma.WebAssembly.BusinessLogic.Interfaces;
+using Diploma.WebAssembly.Components.Dialogs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -26,7 +27,6 @@ public partial class UserOrganizations
     
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(1000);
         _organizations = await CurrentUserService.GetAllOrganizationsAsync();
     }
 }

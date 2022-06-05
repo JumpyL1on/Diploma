@@ -1,0 +1,56 @@
+﻿@using Diploma.Common.DTOs
+@if (_matches == null)
+{
+    <Loading/>
+}
+else if (_matches.Count == 0)
+{
+    <MudText Typo="Typo.body1" Class="mt-6 d-flex justify-center">
+        Расписание турнира еще не опубликовано
+    </MudText>
+}
+else
+{
+    <MudText Typo="Typo.h6" Class="mt-6">
+        Все матчи турнира
+    </MudText>
+    <MudTabs Color="Color.Primary" Centered="@true" Class="mt-6">
+        @foreach (var group in _matches.GroupBy(x => x.Round))
+        {
+            <MudTabPanel Text="@($"Раунд {group.Key}")">
+                <MudTable T="MatchDTO"
+                          Items="@(group.OrderBy(x => x.Order))"
+                          Striped="@true">
+                    <HeaderContent>
+                        <MudTh>Дата</MudTh>
+                        <MudTh>Матч</MudTh>
+                        <MudTh/>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            @context.Start.ToLocalTime().ToString("f")
+                        </MudTd>
+                        <MudTd>
+                            <MudStack Row="@true">
+                                <MudText Typo="Typo.body1">
+                                    @context.ParticipantA.TeamTitle
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    @context.ParticipantAScore : @context.ParticipantBScore
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    @context.ParticipantB.TeamTitle
+                                </MudText>
+                            </MudStack>
+                        </MudTd>
+                        <MudTd Class="d-flex justify-end">
+                            <MudLink Href="@($"/match/{context.Id}")">
+                                Подробнее
+                            </MudLink>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+        }
+    </MudTabs>
+}

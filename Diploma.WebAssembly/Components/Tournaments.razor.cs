@@ -6,11 +6,12 @@ namespace Diploma.WebAssembly.Components;
 
 public partial class Tournaments
 {
-    private List<TournamentDTO>? _tournaments;
+    [Parameter] public string Status { get; set; }
     [Inject] public ITournamentService TournamentService { get; set; }
+    private List<TournamentDTO>? _tournaments;
 
     protected override async Task OnInitializedAsync()
     {
-        _tournaments = await TournamentService.GetAll();
+        _tournaments = await TournamentService.GetAllByStatus(Status);
     }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diploma.WebAPI.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220531110249_Initial")]
+    [Migration("20220603133156_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,7 +36,7 @@ namespace Diploma.WebAPI.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SteamGames");
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Match", b =>
@@ -83,6 +83,46 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.ToTable("Matches");
                 });
 
+            modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Organization", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.OrganizationMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("OrganizationMembers");
+                });
+
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Participant", b =>
                 {
                     b.Property<Guid>("Id")
@@ -124,7 +164,7 @@ namespace Diploma.WebAPI.DataAccess.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Team", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.TeamMember", b =>
@@ -150,7 +190,7 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("TeamMember", (string)null);
+                    b.ToTable("TeamMembers");
                 });
 
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Tournament", b =>
@@ -165,17 +205,17 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.Property<DateTime?>("End")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("MaxParticipantsNumber")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("ParticipantsNumber")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime>("RegistrationEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("RegistrationStart")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("timestamp with time zone");
@@ -185,6 +225,10 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Tournaments");
                 });
@@ -215,10 +259,6 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -237,10 +277,6 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -281,7 +317,7 @@ namespace Diploma.WebAPI.DataAccess.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("UserSteamGame", (string)null);
+                    b.ToTable("UserGames");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -371,6 +407,25 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.Navigation("Tournament");
                 });
 
+            modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.OrganizationMember", b =>
+                {
+                    b.HasOne("Diploma.WebAPI.DataAccess.Entities.Organization", "Organization")
+                        .WithMany("OrganizationMembers")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Diploma.WebAPI.DataAccess.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Participant", b =>
                 {
                     b.HasOne("Diploma.WebAPI.DataAccess.Entities.Team", "Team")
@@ -420,10 +475,29 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Tournament", b =>
+                {
+                    b.HasOne("Diploma.WebAPI.DataAccess.Entities.Game", "Game")
+                        .WithMany("Tournaments")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Diploma.WebAPI.DataAccess.Entities.Organization", "Organization")
+                        .WithMany("Tournaments")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.UserGame", b =>
                 {
                     b.HasOne("Diploma.WebAPI.DataAccess.Entities.Game", "Game")
-                        .WithMany("UserSteamGames")
+                        .WithMany("UserGames")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -470,7 +544,16 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 {
                     b.Navigation("Teams");
 
-                    b.Navigation("UserSteamGames");
+                    b.Navigation("Tournaments");
+
+                    b.Navigation("UserGames");
+                });
+
+            modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Organization", b =>
+                {
+                    b.Navigation("OrganizationMembers");
+
+                    b.Navigation("Tournaments");
                 });
 
             modelBuilder.Entity("Diploma.WebAPI.DataAccess.Entities.Participant", b =>

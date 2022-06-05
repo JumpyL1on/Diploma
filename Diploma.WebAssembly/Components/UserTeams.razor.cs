@@ -1,5 +1,6 @@
 ﻿using Diploma.Common.DTOs;
 using Diploma.WebAssembly.BusinessLogic.Interfaces;
+using Diploma.WebAssembly.Components.Dialogs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -14,7 +15,7 @@ public partial class UserTeams
 
     private async Task OnClickAsync()
     {
-        var dialog = DialogService.Show<CreateTeamDialog>("Создание организации");
+        var dialog = DialogService.Show<CreateTeamDialog>("Создание команды");
 
         var result = await dialog.Result;
 
@@ -55,7 +56,6 @@ public partial class UserTeams
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(1000);
         _teams = await CurrentUserService.GetAllTeamsAsync();
     }
 }

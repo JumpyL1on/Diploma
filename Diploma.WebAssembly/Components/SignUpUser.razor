@@ -15,16 +15,8 @@
                     </div>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Имя" Variant="Variant.Outlined" @bind-Value="_request.Name"
-                                  Validation="@((string name) => UserValidationService.ValidateName(name))"/>
-                </MudItem>
-                <MudItem xs="12">
                     <MudTextField T="string" Label="Никнейм" Variant="Variant.Outlined" @bind-Value="_request.UserName"
                                   Validation="@((string userName) => UserValidationService.ValidateUserName(userName))"/>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField T="string" Label="Фамилия" Variant="Variant.Outlined" @bind-Value="_request.Surname"
-                                  Validation="@((string surname) => UserValidationService.ValidateSurname(surname))"/>
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField T="string" Label="E-mail" Variant="Variant.Outlined" @bind-Value="_request.Email"

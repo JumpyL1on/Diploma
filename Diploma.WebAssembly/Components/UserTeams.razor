@@ -4,11 +4,11 @@
     <MudText Typo="Typo.h5" Class="mt-6">
         Мои команды
     </MudText>
-    <MudCard Class="d-flex justify-center">
-        <MudCardContent>
+    <MudCard Class="mt-6">
+        <MudCardContent Class="d-flex justify-center">
             <MudText>Создайте свою первую команду</MudText>
         </MudCardContent>
-        <MudCardActions>
+        <MudCardActions Class="justify-center">
             <MudButton Variant="Variant.Filled" OnClick="OnClickAsync">
                 <MudStack Row="@true">
                     <MudIcon Icon="@Icons.Material.Filled.Add"/>
@@ -20,15 +20,9 @@
 }
 @if (_teams != null && _teams.Count != 0)
 {
-    <MudStack Row="@true" Class="mt-6">
-        <MudText Typo="Typo.h6">Мои команды</MudText>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClickAsync">
-            <MudStack Row="@true">
-                <MudIcon Icon="@Icons.Material.Filled.Add"/>
-                <MudText Typo="Typo.body1">Создать команду</MudText>
-            </MudStack>
-        </MudButton>
-    </MudStack>
+    <MudText Typo="Typo.h6" Class="mt-6">
+        Мои команды
+    </MudText>
     <MudTable Items="_teams" T="TeamDTO" Class="mt-6">
         <HeaderContent>
             <MudTh>Команда</MudTh>
@@ -38,7 +32,11 @@
             <MudTh/>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>@context.Title</MudTd>
+            <MudTd>
+                <MudLink Href="@($"/team/{@context.Id}")">
+                    @context.Title
+                </MudLink>
+            </MudTd>
             <MudTd>
                 <MudStack Row="@true">
                     <MudIcon Icon="@Icons.Custom.Brands.Steam"/>
@@ -48,9 +46,18 @@
             <MudTd>5</MudTd>
             <MudTd>@context.Role</MudTd>
             <MudTd>
-                <MudButton Variant="Variant.Filled">
-                    Редактировать
-                </MudButton>
+                @if (context.Role == "Капитан")
+                {
+                    <MudButton Variant="Variant.Filled">
+                        <MudText Typo="Typo.body1">Удалить команду</MudText>
+                    </MudButton>
+                }
+                @if (context.Role == "Игрок")
+                {
+                    <MudButton Variant="Variant.Filled">
+                        <MudText Typo="Typo.body1">Покинуть состав</MudText>
+                    </MudButton>
+                }
             </MudTd>
         </RowTemplate>
     </MudTable>

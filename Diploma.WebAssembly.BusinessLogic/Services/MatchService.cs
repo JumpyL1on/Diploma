@@ -13,13 +13,17 @@ public class MatchService : IMatchService
         _httpClient = httpClient;
     }
 
-    public async Task<MatchDTO?> GetCurrentMatch()
+    public Task<List<MatchDTO>> GetAllByTournamentId(Guid tournamentId)
     {
-        return await _httpClient.GetFromJsonAsync<MatchDTO>("matches/current");
+        var requestUri = $"tournaments/{tournamentId}/matches";
+
+        return _httpClient.GetFromJsonAsync<List<MatchDTO>>(requestUri);
     }
 
-    public Task<MatchDTO?> GetCurrentMatch(Guid userId)
+    public Task<MatchDetailsDTO> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var requestUri = $"tournaments/{Guid.Empty}/matches/{id}";
+
+        return _httpClient.GetFromJsonAsync<MatchDetailsDTO>(requestUri);
     }
 }

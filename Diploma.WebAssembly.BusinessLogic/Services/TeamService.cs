@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using Diploma.Common.DTOs;
 using Diploma.Common.Requests;
 using Diploma.WebAssembly.BusinessLogic.Interfaces;
 
@@ -11,6 +12,11 @@ public class TeamService : ITeamService
     public TeamService(HttpClient httpClient)
     {
         _httpClient = httpClient;
+    }
+
+    public async Task<TeamDetailsDTO> GetByIdAsync(Guid id)
+    {
+        return await _httpClient.GetFromJsonAsync<TeamDetailsDTO>($"teams/{id}");
     }
 
     public async Task CreateAsync(CreateTeamRequest request)

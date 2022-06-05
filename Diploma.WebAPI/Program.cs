@@ -5,6 +5,8 @@ using Diploma.WebAPI.DataAccess;
 using Diploma.WebAPI.DataAccess.Entities;
 using Diploma.WebAPI.DataAccess.ValueObjects;
 using Diploma.WebAPI.Extensions;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -17,10 +19,7 @@ builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddAutoMapper(typeof(MatchProfile).Assembly);
 
 builder.Services
-    .AddIdentityCore<User>(identityOptions =>
-    {
-        identityOptions.User.RequireUniqueEmail = true;
-    })
+    .AddIdentityCore<User>(x => x.User.RequireUniqueEmail = true)
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
 
@@ -28,21 +27,21 @@ builder.Services.AddServices();
 
 builder.Services.AddValidationServices();
 
-builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        var jwtSettings = builder.Configuration
-            .GetSection("JWTSettings")
-            .Get<JwtSettings>();
+var client = builder.Services.AddSteamGameClient();
 
-        options.TokenValidationParameters = new TokenValidationParameters
+builder.Services
+    .AddAuthentication(x =>
+    {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        x.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(x =>
+    {
+        var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+        x.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
@@ -52,48 +51,49 @@ builder.Services
             ValidAudience = jwtSettings.ValidAudience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey))
         };
+
+        x.MapInboundClaims = false;
     })
     .AddCookie()
-    .AddSteam(options => options.ApplicationKey = "2299E12A058C57E16AD5661BD11E5F84");
+    .AddSteam(x => x.ApplicationKey = "2299E12A058C57E16AD5661BD11E5F84");
 
-builder.Services.AddControllers(options => { options.Filters.Add(typeof(ExceptionFilter)); });
+builder.Services.AddControllers(x => x.Filters.Add(typeof(ExceptionFilter)));
 
 builder.Services.AddMvcCore();
 
-builder.Services
-    .AddEndpointsApiExplorer()
-    .AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer().AddSwaggerGen();
 
-/*webApplicationBuilder.Services.AddHangfire(globalConfiguration =>
+builder.Services.AddHangfire(x =>
 {
-    var connectionString = webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection");
-    globalConfiguration.UsePostgreSqlStorage(connectionString);
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    
+    x.UsePostgreSqlStorage(connectionString);
 });
 
-webApplicationBuilder.Services.AddHangfireServer();*/
+builder.Services.AddHangfireServer();
 
-var webApplication = builder.Build();
+var application = builder.Build();
 
-if (webApplication.Environment.IsDevelopment())
+application.Lifetime.ApplicationStopped.Register(() => client.Dispose());
+
+if (application.Environment.IsDevelopment())
 {
-    webApplication
-        .UseSwagger()
-        .UseSwaggerUI();
+    application.UseSwagger().UseSwaggerUI();
 
-    webApplication.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+    application.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
     );
 }
 
-webApplication.UseHttpsRedirection();
+application.UseHttpsRedirection();
 
-webApplication.UseRouting();
+application.UseRouting();
 
-webApplication.UseAuthentication();
+application.UseAuthentication();
 
-webApplication.UseAuthorization();
+application.UseAuthorization();
 
-webApplication.MapControllers();
+application.MapControllers();
 
-//webApplication.UseHangfireDashboard();
+application.UseHangfireDashboard();
 
-await webApplication.RunAsync();
+await application.RunAsync();

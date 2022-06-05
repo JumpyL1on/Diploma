@@ -15,8 +15,6 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Surname = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -38,7 +36,7 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SteamGames",
+                name: "Games",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -46,26 +44,19 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SteamGames", x => x.Id);
+                    table.PrimaryKey("PK_Games", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tournaments",
+                name: "Organizations",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    ParticipantsNumber = table.Column<int>(type: "integer", nullable: false),
-                    MaxParticipantsNumber = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RegistrationStart = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RegistrationEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    End = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    Title = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tournaments", x => x.Id);
+                    table.PrimaryKey("PK_Organizations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,7 +121,7 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Team",
+                name: "Teams",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -139,17 +130,17 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Team", x => x.Id);
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Team_SteamGames_GameId",
+                        name: "FK_Teams_Games_GameId",
                         column: x => x.GameId,
-                        principalTable: "SteamGames",
+                        principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserSteamGame",
+                name: "UserGames",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -159,17 +150,100 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserSteamGame", x => new { x.UserId, x.GameId });
+                    table.PrimaryKey("PK_UserGames", x => new { x.UserId, x.GameId });
                     table.ForeignKey(
-                        name: "FK_UserSteamGame_AspNetUsers_UserId",
+                        name: "FK_UserGames_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserSteamGame_SteamGames_GameId",
+                        name: "FK_UserGames_Games_GameId",
                         column: x => x.GameId,
-                        principalTable: "SteamGames",
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrganizationMembers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrganizationMembers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrganizationMembers_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tournaments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    ParticipantsNumber = table.Column<int>(type: "integer", nullable: false),
+                    MaxParticipantsNumber = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    End = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    GameId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tournaments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tournaments_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tournaments_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TeamMembers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
+                    TeamId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeamMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TeamMembers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeamMembers_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -187,41 +261,15 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_Participants", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Participants_Team_TeamId",
+                        name: "FK_Participants_Teams_TeamId",
                         column: x => x.TeamId,
-                        principalTable: "Team",
+                        principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Participants_Tournaments_TournamentId",
                         column: x => x.TournamentId,
                         principalTable: "Tournaments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TeamMember",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Role = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TeamId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TeamMember", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TeamMember_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TeamMember_Team_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "Team",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -299,6 +347,16 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 column: "TournamentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrganizationMembers_OrganizationId",
+                table: "OrganizationMembers",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrganizationMembers_UserId",
+                table: "OrganizationMembers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Participants_TeamId",
                 table: "Participants",
                 column: "TeamId");
@@ -309,24 +367,34 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 column: "TournamentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Team_GameId",
-                table: "Team",
-                column: "GameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TeamMember_TeamId",
-                table: "TeamMember",
+                name: "IX_TeamMembers_TeamId",
+                table: "TeamMembers",
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamMember_UserId",
-                table: "TeamMember",
+                name: "IX_TeamMembers_UserId",
+                table: "TeamMembers",
                 column: "UserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSteamGame_GameId",
-                table: "UserSteamGame",
+                name: "IX_Teams_GameId",
+                table: "Teams",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tournaments_GameId",
+                table: "Tournaments",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tournaments_OrganizationId",
+                table: "Tournaments",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserGames_GameId",
+                table: "UserGames",
                 column: "GameId");
         }
 
@@ -345,10 +413,13 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 name: "Matches");
 
             migrationBuilder.DropTable(
-                name: "TeamMember");
+                name: "OrganizationMembers");
 
             migrationBuilder.DropTable(
-                name: "UserSteamGame");
+                name: "TeamMembers");
+
+            migrationBuilder.DropTable(
+                name: "UserGames");
 
             migrationBuilder.DropTable(
                 name: "Participants");
@@ -357,13 +428,16 @@ namespace Diploma.WebAPI.DataAccess.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Team");
+                name: "Teams");
 
             migrationBuilder.DropTable(
                 name: "Tournaments");
 
             migrationBuilder.DropTable(
-                name: "SteamGames");
+                name: "Games");
+
+            migrationBuilder.DropTable(
+                name: "Organizations");
         }
     }
 }

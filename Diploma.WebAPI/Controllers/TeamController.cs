@@ -18,6 +18,13 @@ public class TeamController : ControllerBase
         _teamService = teamService;
     }
 
+    [HttpGet]
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id)
+    {
+        return Ok(await _teamService.GetByIdAsync(id));
+    }
+
     [HttpPost]
     public async Task<IActionResult> PostAsync(CreateTeamRequest request)
     {

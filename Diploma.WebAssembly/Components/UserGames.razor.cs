@@ -11,7 +11,6 @@ public partial class UserGames
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(1000);
         _games = await CurrentUserService.GetAllGamesAsync();
     }
 }

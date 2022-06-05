@@ -2,10 +2,10 @@
 @code 
 {
     [Inject]
-    public NavigationManager NavigationManager { get; set; }
+    public NavigationManager NavManager { get; set; }
 
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("user/sign-in");
+        NavManager.NavigateTo("user/sign-in");
     }
 }

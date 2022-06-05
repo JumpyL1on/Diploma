@@ -18,6 +18,13 @@ public class CurrentUserController : ControllerBase
     }
 
     [HttpGet]
+    [Route("tournaments")]
+    public async Task<IActionResult> GetAllTournamentsAsync()
+    {
+        return Ok(await _currentUserService.GetAllTournamentsAsync(this.GetUserId()));
+    }
+
+    [HttpGet]
     [Route("teams")]
     public async Task<IActionResult> GetAllTeamsAsync()
     {
@@ -32,9 +39,25 @@ public class CurrentUserController : ControllerBase
     }
 
     [HttpGet]
+    [Route("matches")]
+    public async Task<IActionResult> GetAllMatchesAsync()
+    {
+        return Ok(await _currentUserService.GetAllMatchesAsync(this.GetUserId()));
+    }
+
+    [HttpGet]
     [Route("organizations")]
     public async Task<IActionResult> GetAllOrganizationsAsync()
     {
         return Ok(await _currentUserService.GetAllOrganizationsAsync(this.GetUserId()));
+    }
+
+    [HttpPost]
+    [Route("invite-to-lobby")]
+    public async Task<IActionResult> InviteToLobbyAsync()
+    {
+        await _currentUserService.InviteToLobbyAsync(this.GetUserId());
+        
+        return Ok();
     }
 }

@@ -26,7 +26,7 @@ public class UserGameConfiguration : IEntityTypeConfiguration<UserGame>
 
         builder
             .HasOne(x => x.Game)
-            .WithMany(x => x.UserSteamGames)
+            .WithMany(x => x.UserGames)
             .HasForeignKey(x => x.GameId)
             .IsRequired();
     }

@@ -1,6 +1,9 @@
 @inherits LayoutComponentBase
 <MudSnackbarProvider/>
-<MudDialogProvider CloseButton="@true"/>
+<MudDialogProvider CloseButton="@true"
+                   MaxWidth="MaxWidth.Small"
+                   FullWidth="@true"
+                   Position="DialogPosition.TopCenter"/>
 <MudThemeProvider/>
 <MudLayout>
     <AuthorizeView>

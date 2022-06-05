@@ -4,11 +4,11 @@
     <MudText Typo="Typo.h5" Class="mt-6">
         Привязанные игры
     </MudText>
-    <MudCard Class="d-flex justify-center mt-6">
-        <MudCardContent>
+    <MudCard Class="mt-6">
+        <MudCardContent Class="d-flex justify-center">
             <MudText>Вы еще не привязывали игры к профилю</MudText>
         </MudCardContent>
-        <MudCardActions>
+        <MudCardActions Class="justify-center">
             <MudButton Variant="Variant.Filled" Href="user/profile/edit">
                 <MudText Typo="Typo.body1">Привязать игры</MudText>
             </MudButton>
@@ -19,11 +19,13 @@
 {
     <MudStack Row="@true" Class="mt-6">
         <MudText Typo="Typo.h5">Привязанные игры</MudText>
-        <MudButton Variant="Variant.Filled" Href="/user/profile/edit">
-            <MudStack Row="@true">
-                <MudIcon Icon="@Icons.Material.Filled.Edit"/>
-                <MudText Typo="Typo.body1">Редактировать</MudText>
-            </MudStack>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Filled.Edit"
+                   Href="/user/profile/edit">
+            <MudText Typo="Typo.body1">
+                Редактировать
+            </MudText>
         </MudButton>
     </MudStack>
     <MudTable Items="_games" T="GameDTO" Class="mt-6">

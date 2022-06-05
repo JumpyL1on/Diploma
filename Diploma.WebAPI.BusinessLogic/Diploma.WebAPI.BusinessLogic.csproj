@@ -12,9 +12,9 @@
 
     <ItemGroup>
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-      <PackageReference Include="Hangfire" Version="1.7.28" />
+      <PackageReference Include="Hangfire" Version="1.7.29" />
       <PackageReference Include="Hangfire.PostgreSql" Version="1.9.7" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.5" />
       <PackageReference Include="SteamKit2" Version="2.4.1" />
     </ItemGroup>
 
