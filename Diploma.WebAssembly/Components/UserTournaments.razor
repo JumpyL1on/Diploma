@@ -50,7 +50,7 @@ else
                         До окончания регистрации @((context.Start - DateTime.UtcNow).ToString("g"))
                     </MudTd>
                 }
-                else if (context.End == null)
+                else if (context.FinishedAt == null)
                 {
                     <MudTd>
                         <MudText Typo="Typo.body1">

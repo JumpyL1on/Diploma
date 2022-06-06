@@ -7,5 +7,7 @@ public class Team
     public Guid GameId { get; set; }
     public Game Game { get; set; }
     public ICollection<TeamMember> TeamMembers { get; set; }
-    public ICollection<Participant> Participants { get; set; }
+    public ICollection<TeamTournament> TeamTournaments { get; set; }
+    public ICollection<Match> LeftTeamMatches { get; set; }
+    public ICollection<Match> RightTeamMatches { get; set; }
 }

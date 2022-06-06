@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Diploma.WebAssembly.BusinessLogic.Services;
+namespace Diploma.WebAssembly.BusinessLogic;
 
 public class AppAuthenticationStateProvider : AuthenticationStateProvider
 {

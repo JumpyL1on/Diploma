@@ -22,19 +22,21 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
     public SteamGameClient(SteamClient steamClient)
     {
         _callbackManager = new CallbackManager(steamClient);
+        
         _callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
         _callbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
 
         _steamUser = steamClient.GetHandler<SteamUser>()!;
         _callbackManager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
         _callbackManager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
-        _callbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
+        _callbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnUpdateMachineAuth);
 
-        _callbackManager.Subscribe<ConnectionStatusCallback>(OnConnectionStatus);
-        _callbackManager.Subscribe<GCWelcomeCallback>(OnGCWelcome);
-        _callbackManager.Subscribe<UnhandledDotaGCCallback>(OnUnhandledDotaGC);
-        _callbackManager.Subscribe<PracticeLobbySnapshotCallback>(OnPracticeLobbySnapshot);
-        _callbackManager.Subscribe<PracticeLobbyLeaveCallback>(OnPracticeLobbyLeaveCallback);
+        _callbackManager.Subscribe<ClientWelcomeCallback>(OnClientWelcome);
+        _callbackManager.Subscribe<ClientConnectionStatusCallback>(OnClientConnectionStatus);
+        _callbackManager.Subscribe<CacheSubscribedCallback>(OnCacheSubscribed);
+        _callbackManager.Subscribe<CacheUnsubscribedCallback>(OnCacheUnsubscribedCallback);
+        _callbackManager.Subscribe<UpdateMultipleCallback>(OnUpdateMultiple);
+        _callbackManager.Subscribe<UnknownCallback>(OnUnknown);
         
 
         _engine = ESourceEngine.k_ESE_Source2;
@@ -111,11 +113,17 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
 
         LeaveGame();
 
+        Thread.Sleep(1000);
+
         LeaveLobby();
+
+        Thread.Sleep(1000);
 
         var msg = new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed);
 
         Client.Send(msg);
+
+        Thread.Sleep(5000);
 
         _steamUser.LogOff();
 
@@ -124,21 +132,116 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         }
     }
 
-    private void Start()
+    public override void HandleMsg(IPacketMsg packetMsg)
+    {
+        if (packetMsg.MsgType != EMsg.ClientFromGC)
+        {
+            return;
+        }
+
+        var msg = new ClientMsgProtobuf<CMsgGCClient>(packetMsg);
+
+        if (msg.Body.appid != _appId)
+        {
+            return;
+        }
+
+        var gcMsg = GetPacketGCMsg(msg.Body.msgtype, msg.Body.payload);
+
+        var messageMap = new Dictionary<uint, Action<IPacketGCMsg>>
+        {
+            { (uint)EGCBaseClientMsg.k_EMsgGCClientWelcome, HandleClientWelcome },
+            { (uint)EGCBaseClientMsg.k_EMsgGCClientConnectionStatus, HandleClientConnectionStatus },
+            { (uint)ESOMsg.k_ESOMsg_CacheSubscribed, HandleCacheSubscribed },
+            { (uint)ESOMsg.k_ESOMsg_CacheUnsubscribed, HandleCacheUnsubscribed },
+            { (uint)ESOMsg.k_ESOMsg_UpdateMultiple, HandleUpdateMultiple }
+        };
+
+        if (!messageMap.TryGetValue(gcMsg.MsgType, out var action))
+        {
+            Client.PostCallback(new UnknownCallback(gcMsg));
+            return;
+        }
+
+        action(gcMsg);
+    }
+
+    private void HandleClientWelcome(IPacketGCMsg packetMsg)
+    {
+        _lobby = null;
+
+        var msg = new ClientGCMsgProtobuf<CMsgClientWelcome>(packetMsg);
+
+        Client.PostCallback(new ClientWelcomeCallback(msg.Body));
+    }
+
+    private void HandleClientConnectionStatus(IPacketGCMsg obj)
+    {
+        var msg = new ClientGCMsgProtobuf<CMsgConnectionStatus>(obj);
+
+        Client.PostCallback(new ClientConnectionStatusCallback(msg.Body));
+    }
+
+    private void HandleCacheSubscribed(IPacketGCMsg packetMsg)
+    {
+        var msg = new ClientGCMsgProtobuf<CMsgSOCacheSubscribed>(packetMsg);
+
+        foreach (var unused in msg.Body.objects.Where(x => x.type_id == 2004))
+        {
+            Client.PostCallback(new CacheSubscribedCallback(msg.Body));
+        }
+    }
+
+    private void HandleCacheUnsubscribed(IPacketGCMsg packetMsg)
+    {
+        var msg = new ClientGCMsgProtobuf<CMsgSOCacheUnsubscribed>(packetMsg);
+
+        if (_lobby == null || msg.Body.owner_soid.id != _lobby.lobby_id)
+        {
+            return;
+        }
+
+        Client.PostCallback(new CacheUnsubscribedCallback(_lobby));
+
+        _lobby = null;
+    }
+
+    private void HandleUpdateMultiple(IPacketGCMsg packetMsg)
+    {
+        var msg = new ClientGCMsgProtobuf<CMsgSOMultipleObjects>(packetMsg);
+
+        foreach (var obj in msg.Body.objects_modified.Where(obj => obj.type_id == 2004))
+        {
+            using var stream = new MemoryStream(obj.object_data);
+            {
+                var lobby = Serializer.Deserialize<CSODOTALobby>(stream);
+
+                var oldLobby = _lobby;
+                _lobby = lobby;
+
+                Client.PostCallback(new UpdateMultipleCallback(oldLobby, lobby));
+            }
+        }
+    }
+    
+    private void Launch()
     {
         Console.WriteLine("Launching Dota 2");
 
-        var launchEvent = new ClientMsg<MsgClientAppUsageEvent>();
-        launchEvent.Body.AppUsageEvent = EAppUsageEvent.GameLaunch;
-        launchEvent.Body.GameID = new GameID
+        var msg = new ClientMsg<MsgClientAppUsageEvent>();
+        
+        msg.Body.AppUsageEvent = EAppUsageEvent.GameLaunch;
+        msg.Body.GameID = new GameID
         {
             AppID = _appId,
             AppType = GameID.GameType.App
         };
-        Client.Send(launchEvent);
+        
+        Client.Send(msg);
 
-        var playGame = new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayedWithDataBlob);
-        playGame.Body.games_played.Add(new CMsgClientGamesPlayed.GamePlayed
+        var msgProtobuf = new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayedWithDataBlob);
+        
+        msgProtobuf.Body.games_played.Add(new CMsgClientGamesPlayed.GamePlayed
         {
             game_id = _appId,
             game_extra_info = "Dota 2",
@@ -147,8 +250,10 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
             game_flags = (uint)_engine,
             owner_id = Client.SteamID!.AccountID
         });
-        playGame.Body.client_os_type = (uint)EOSType.Windows10;
-        Client.Send(playGame);
+        
+        msgProtobuf.Body.client_os_type = (uint)EOSType.Windows10;
+        
+        Client.Send(msgProtobuf);
 
         SayHello();
 
@@ -177,156 +282,40 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         Send(msg);
     }
 
-    public override void HandleMsg(IPacketMsg packetMsg)
-    {
-        if (packetMsg.MsgType != EMsg.ClientFromGC)
-        {
-            return;
-        }
-
-        var msg = new ClientMsgProtobuf<CMsgGCClient>(packetMsg);
-
-        if (msg.Body.appid != _appId)
-        {
-            return;
-        }
-
-        var gcMsg = GetPacketGCMsg(msg.Body.msgtype, msg.Body.payload);
-
-        var messageMap = new Dictionary<uint, Action<IPacketGCMsg>>
-        {
-            { (uint)ESOMsg.k_ESOMsg_Destroy, HandleCacheDestroy },
-            { (uint)ESOMsg.k_ESOMsg_CacheSubscribed, HandleCacheSubscribed },
-            { (uint)ESOMsg.k_ESOMsg_CacheUnsubscribed, HandleCacheUnsubscribed },
-            { (uint)ESOMsg.k_ESOMsg_UpdateMultiple, HandleUpdateMultiple },
-            { (uint)EGCBaseClientMsg.k_EMsgGCClientWelcome, HandleWelcome },
-            { (uint)EGCBaseClientMsg.k_EMsgGCClientConnectionStatus, HandleConnectionStatus }
-        };
-
-        if (!messageMap.TryGetValue(gcMsg.MsgType, out var action))
-        {
-            Client.PostCallback(new UnhandledDotaGCCallback(gcMsg));
-            return;
-        }
-
-        action(gcMsg);
-    }
-
-    private void HandleConnectionStatus(IPacketGCMsg obj)
-    {
-        var msg = new ClientGCMsgProtobuf<CMsgConnectionStatus>(obj);
-        
-        Client.PostCallback(new ConnectionStatusCallback(msg.Body));
-    }
-
-    private void HandleWelcome(IPacketGCMsg packetMsg)
-    {
-        _lobby = null;
-
-        var msg = new ClientGCMsgProtobuf<CMsgClientWelcome>(packetMsg);
-
-        Client.PostCallback(new GCWelcomeCallback(msg.Body));
-
-        foreach (var obj in msg.Body.outofdate_subscribed_caches.SelectMany(x => x.objects))
-        {
-            HandleSubscribedType(obj);
-        }
-    }
-
-    private void HandleCacheDestroy(IPacketGCMsg packetMsg)
-    {
-        var msg = new ClientGCMsgProtobuf<CMsgSOSingleObject>(packetMsg);
-        
-        if (_lobby != null && msg.Body.type_id == 2004)
-        {
-            _lobby = null;
-            Client.PostCallback(new PracticeLobbyLeaveCallback(null, EMatchOutcome.k_EMatchOutcome_Unknown));
-        }
-    }
-
-    private void HandleCacheSubscribed(IPacketGCMsg packetMsg)
-    {
-        var msg = new ClientGCMsgProtobuf<CMsgSOCacheSubscribed>(packetMsg);
-        
-        foreach (var @object in msg.Body.objects)
-        {
-            HandleSubscribedType(@object);
-        }
-    }
-
-    private void HandleSubscribedType(CMsgSOCacheSubscribed.SubscribedType @object)
-    {
-        if (@object.type_id == 2004)
-        {
-            HandleLobbySnapshot(@object.object_data[0]);
-        }
-    }
-
-    private void HandleCacheUnsubscribed(IPacketGCMsg packetMsg)
-    {
-        var msg = new ClientGCMsgProtobuf<CMsgSOCacheUnsubscribed>(packetMsg);
-
-        if (_lobby != null && msg.Body.owner_soid.id == _lobby.lobby_id)
-        {
-            Client.PostCallback(new PracticeLobbyLeaveCallback(msg.Body, _lobby.match_outcome));
-
-            _lobby = null;
-        }
-
-        else
-        {
-            Client.PostCallback(new CacheUnsubscribedCallback(msg.Body));
-        }
-    }
-
-    private void HandleUpdateMultiple(IPacketGCMsg obj)
-    {
-        var resp = new ClientGCMsgProtobuf<CMsgSOMultipleObjects>(obj);
-        foreach (var mObj in resp.Body.objects_modified)
-        {
-            if (mObj.type_id == 2004)
-                HandleLobbySnapshot(mObj.object_data);
-        }
-    }
-
-    private void HandleLobbySnapshot(byte[] data)
-    {
-        using var stream = new MemoryStream(data);
-        var lob = Serializer.Deserialize<CSODOTALobby>(stream);
-        var oldLob = _lobby;
-        _lobby = lob;
-        Client.PostCallback(new PracticeLobbySnapshotCallback(lob, oldLob));
-    }
-
     private void SayHello()
     {
         var msg = new ClientGCMsgProtobuf<CMsgClientHello>((uint)EGCBaseClientMsg.k_EMsgGCClientHello);
-        
+
         msg.Body.client_launcher = PartnerAccountType.PARTNER_NONE;
         msg.Body.engine = _engine;
         msg.Body.secret_key = "";
         msg.Body.client_session_need = (uint)EDOTAGCSessionNeed.k_EDOTAGCSessionNeed_UserInUINeverConnected;
-        
+
         Send(msg);
     }
 
     private void Send(IClientGCMsg msg)
     {
         var clientMsg = new ClientMsgProtobuf<CMsgGCClient>(EMsg.ClientToGC);
+        
         clientMsg.Body.msgtype = MsgUtil.MakeGCMsg(msg.MsgType, msg.IsProto);
+        
         clientMsg.Body.appid = _appId;
+        
         clientMsg.Body.payload = msg.Serialize();
+        
         Client.Send(clientMsg);
     }
 
-    private static IPacketGCMsg GetPacketGCMsg(uint eMsg, byte[] data)
+    private static IPacketGCMsg GetPacketGCMsg(uint msg, byte[] data)
     {
-        var realEMsg = MsgUtil.GetGCMsg(eMsg);
-        if (MsgUtil.IsProtoBuf(eMsg))
+        var packetMsg = MsgUtil.GetGCMsg(msg);
+        
+        if (MsgUtil.IsProtoBuf(msg))
         {
-            return new PacketClientGCMsgProtobuf(realEMsg, data);
+            return new PacketClientGCMsgProtobuf(packetMsg, data);
         }
 
-        return new PacketClientGCMsg(realEMsg, data);
+        return new PacketClientGCMsg(packetMsg, data);
     }
 }

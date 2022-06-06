@@ -14,17 +14,18 @@ public class CurrentUserService : ICurrentUserService
     private readonly IMapper _mapper;
     private readonly SteamGameClient _steamGameClient;
 
-    public CurrentUserService(AppDbContext dbContext, IMapper mapper, SteamGameClient steamGameClient)
+    public CurrentUserService(AppDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;
-        _steamGameClient = steamGameClient;
+        //_steamGameClient = steamGameClient;
     }
 
     public async Task<List<TournamentDTO>> GetAllTournamentsAsync(Guid userId)
     {
         return await _dbContext.Tournaments
-            .Where(x => x.Participants.Any(y => y.Team.TeamMembers.Any(z => z.UserId == userId)))
+            .Where(x => x.TeamTournaments.Any(y => y.Team.TeamMembers.Any(z => z.UserId == userId)))
+            .OrderByDescending(x => x.Start)
             .ProjectTo<TournamentDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
     }
@@ -48,7 +49,7 @@ public class CurrentUserService : ICurrentUserService
     public async Task<List<MatchDTO>> GetAllMatchesAsync(Guid userId)
     {
         return await _dbContext.Matches
-            .Where(x => x.Tournament.Participants.Any(y => y.Team.TeamMembers.Any(z => z.UserId == userId)))
+            .Where(x => x.Tournament.TeamTournaments.Any(y => y.Team.TeamMembers.Any(z => z.UserId == userId)))
             .ProjectTo<MatchDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
     }

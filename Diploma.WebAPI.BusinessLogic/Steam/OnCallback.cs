@@ -7,65 +7,78 @@ namespace Diploma.WebAPI.BusinessLogic.Steam;
 
 public partial class SteamGameClient
 {
-    private void OnGCWelcome(GCWelcomeCallback callback)
+    private void OnClientWelcome(ClientWelcomeCallback callback)
     {
-        Console.WriteLine($"GC welcoming us, version {callback.Version}");
-    }
-    
-    private void OnConnectionStatus(ConnectionStatusCallback callback)
-    {
-        Console.WriteLine($"Connection status: {callback.result.status}");
+        Console.WriteLine($"Client was welcomed with {callback.Body.version} version");
     }
 
-    private void OnPracticeLobbySnapshot(PracticeLobbySnapshotCallback callback)
+    private void OnClientConnectionStatus(ClientConnectionStatusCallback callback)
     {
-        if (callback.OldLobby == null)
-        {
-            MoveToPool();
-        }
-
-        Console.WriteLine($"Lobby was updated: {callback.Lobby.state} {callback.Lobby.match_outcome}");
+        Console.WriteLine($"Client was connected with {callback.Body.status} status");
     }
 
-    private void OnPracticeLobbyLeaveCallback(PracticeLobbyLeaveCallback callback)
+    private void OnCacheSubscribed(CacheSubscribedCallback callback)
     {
-        Console.WriteLine($"Match was ended {callback.MatchOutcome} {callback.MatchId}");
+        Console.WriteLine($"Cache was subscribed: {callback.Body.owner_soid.id}");
+    }
+
+    private void OnCacheUnsubscribedCallback(CacheUnsubscribedCallback callback)
+    {
+        Console.WriteLine($"Cache was unsubscribed: {callback.Lobby.match_outcome}");
+
+        var lobby = callback.Lobby;
+
         using var dbContext = new AppDbContext();
 
         var match = dbContext.Matches.Single(x => x.Id == MatchId);
 
-        if (callback.MatchOutcome == EMatchOutcome.k_EMatchOutcome_RadVictory)
+        match.FinishedAt = DateTime.UtcNow;
+
+        if (lobby.match_outcome == EMatchOutcome.k_EMatchOutcome_RadVictory)
         {
-            match.ParticipantAScore++;
+            match.LeftTeamScore++;
         }
         else
         {
-            match.ParticipantBScore++;
+            match.RightTeamScore++;
         }
 
         dbContext.SaveChanges();
     }
 
-    private void OnUnhandledDotaGC(UnhandledDotaGCCallback callback)
+    private void OnUpdateMultiple(UpdateMultipleCallback callback)
     {
-        Console.WriteLine($"Unhandled message {callback.Message.MsgType}");
+        Console.WriteLine($"It was updated with {callback.Lobby.state}");
+        
+        if (callback.OldLobby == null)
+        {
+            MoveToPool();
+        }
+    }
+    
+
+    private void OnUnknown(UnknownCallback callback)
+    {
+        Console.WriteLine($"Unknown callback with {callback.Body.MsgType} type");
     }
 
     private void OnConnected(SteamClient.ConnectedCallback callback)
     {
-        Console.WriteLine("Connected to Steam! Logging in '{0}'...", "jumpyl1on");
+        Console.WriteLine("Connected to Steam");
 
         byte[]? sentryHash = null;
+        
         if (File.Exists("sentry.bin"))
         {
             var sentryFile = File.ReadAllBytes("sentry.bin");
+            
             sentryHash = CryptoHelper.SHAHash(sentryFile);
         }
 
         _steamUser.LogOn(new SteamUser.LogOnDetails
         {
             Username = "jumpyl1on",
-            Password = File.ReadAllText("file.txt"),
+            Password = "064jGUi#%2",
             AuthCode = null,
             TwoFactorCode = null,
             SentryFileHash = sentryHash,
@@ -74,15 +87,6 @@ public partial class SteamGameClient
 
     private void OnLoggedOn(SteamUser.LoggedOnCallback callback)
     {
-        if (callback.Result == EResult.AccountLogonDenied)
-        {
-            Console.WriteLine("This account is SteamGuard protected!");
-
-            Console.Write("Please enter your 2 factor auth code from your authenticator app: ");
-            //var twoFactorAuth = Console.ReadLine();
-            return;
-        }
-
         if (callback.Result == EResult.AccountLoginDeniedNeedTwoFactor)
         {
             Console.WriteLine("This account is SteamGuard protected!");
@@ -99,9 +103,9 @@ public partial class SteamGameClient
             return;
         }
 
-        Console.WriteLine("Successfully logged on!");
+        Console.WriteLine("Logged on on Steam");
 
-        Start();
+        Launch();
     }
 
     private void OnDisconnected(SteamClient.DisconnectedCallback callback)
@@ -126,7 +130,7 @@ public partial class SteamGameClient
         Console.WriteLine("Logged off of Steam: {0}", callback.Result);
     }
 
-    private void OnMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
+    private void OnUpdateMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
     {
         Console.WriteLine("Updating sentry file...");
 

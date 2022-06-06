@@ -8,7 +8,7 @@ public class ParticipantProfile : Profile
 {
     public ParticipantProfile()
     {
-        CreateMap<Participant, ParticipantDTO>()
+        CreateMap<TeamTournament, ParticipantDTO>()
             .ForMember(
                 x => x.TeamTitle,
                 x => x.MapFrom(y => y.Team.Title))

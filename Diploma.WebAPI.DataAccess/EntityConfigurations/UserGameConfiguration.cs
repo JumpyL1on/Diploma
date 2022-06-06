@@ -8,6 +8,8 @@ public class UserGameConfiguration : IEntityTypeConfiguration<UserGame>
 {
     public void Configure(EntityTypeBuilder<UserGame> builder)
     {
+        builder.ToTable("UserGame");
+        
         builder
             .Property(x => x.Nickname)
             .IsRequired();
@@ -18,7 +20,7 @@ public class UserGameConfiguration : IEntityTypeConfiguration<UserGame>
 
         builder
             .HasOne(x => x.User)
-            .WithMany(x => x.UserSteamGames)
+            .WithMany(x => x.UserGames)
             .HasForeignKey(x => x.UserId)
             .IsRequired();
 

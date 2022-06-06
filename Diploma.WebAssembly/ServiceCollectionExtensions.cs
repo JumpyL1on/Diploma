@@ -11,7 +11,6 @@ public static class ServiceCollectionExtensions
     public static void AddServices(this IServiceCollection services)
     {
         services
-            .AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider>()
             .AddScoped<ICurrentUserService, CurrentUserService>()
             .AddScoped<IMatchService, MatchService>()
             .AddScoped<IOrganizationService, OrganizationService>()
@@ -19,7 +18,10 @@ public static class ServiceCollectionExtensions
             .AddScoped<ITeamMemberService, TeamMemberService>()
             .AddScoped<ITeamService, TeamService>()
             .AddScoped<ITournamentService, TournamentService>()
-            .AddScoped<IUserService, UserService>()
+            .AddScoped<IUserService, UserService>();
+
+        services
+            .AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider>()
             .AddScoped<HttpInterceptor>();
     }
 

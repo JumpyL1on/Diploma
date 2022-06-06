@@ -8,16 +8,35 @@ public class MatchConfiguration : IEntityTypeConfiguration<Match>
 {
     public void Configure(EntityTypeBuilder<Match> builder)
     {
-        builder
-            .HasOne(match => match.ParticipantA)
-            .WithMany(participant => participant.ParticipantAMatches)
-            .HasForeignKey(match => match.ParticipantAId)
-            .IsRequired(false);
+        builder.ToTable("Match");
         
         builder
-            .HasOne(match => match.ParticipantB)
-            .WithMany(participant => participant.ParticipantBMatches)
-            .HasForeignKey(match => match.ParticipantBId)
+            .Property(x => x.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+
+        builder
+            .Property(x => x.Start)
             .IsRequired(false);
+
+        builder
+            .Property(x => x.FinishedAt)
+            .IsRequired(false);
+
+        builder
+            .Property(x => x.Round)
+            .IsRequired();
+
+        builder
+            .Property(x => x.Order)
+            .IsRequired();
+
+        builder
+            .Property(x => x.LeftTeamScore)
+            .IsRequired();
+
+        builder
+            .Property(x => x.RightTeamScore)
+            .IsRequired();
     }
 }

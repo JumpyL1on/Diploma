@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
-using Diploma.WebAPI.DataAccess.ValueObjects;
+using Diploma.WebAPI.DataAccess.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -10,31 +10,36 @@ namespace Diploma.WebAPI.BusinessLogic.Services;
 
 public class JwtService : IJwtService
 {
-    private readonly JwtSettings _jwtSettings;
+    private readonly IConfiguration _configuration;
 
     public JwtService(IConfiguration configuration)
     {
-        _jwtSettings = configuration
-            .GetSection("JwtSettings")
-            .Get<JwtSettings>();
+        _configuration = configuration;
     }
 
-    public string GenerateAccessToken(List<Claim> claims)
+    public string GenerateAccessToken(User user)
     {
-        var bytes = Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey);
+        var tokenHandler = new JwtSecurityTokenHandler();
 
-        var key = new SymmetricSecurityKey(bytes);
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email)
+        };
 
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
-        var token = new JwtSecurityToken(
-            _jwtSettings.ValidIssuer,
-            _jwtSettings.ValidAudience,
-            claims,
-            null,
-            DateTime.Now.AddMinutes(_jwtSettings.ExpiryInMinutes),
-            credentials);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Issuer = _configuration["Jwt:Issuer"],
+            Audience = _configuration["Jwt:Audience"],
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Jwt:ExpiresInMinutes"])),
+            SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
+        };
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+
+        return tokenHandler.WriteToken(token);
     }
 }

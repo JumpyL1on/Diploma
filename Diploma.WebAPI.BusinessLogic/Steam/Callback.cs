@@ -6,68 +6,65 @@ namespace Diploma.WebAPI.BusinessLogic.Steam;
 
 public partial class SteamGameClient
 {
+    public sealed class ClientWelcomeCallback : CallbackMsg
+    {
+        internal ClientWelcomeCallback(CMsgClientWelcome body)
+        {
+            Body = body;
+        }
+
+        public CMsgClientWelcome Body { get; }
+    }
+
+    public sealed class ClientConnectionStatusCallback : CallbackMsg
+    {
+        public CMsgConnectionStatus Body;
+
+        internal ClientConnectionStatusCallback(CMsgConnectionStatus body)
+        {
+            Body = body;
+        }
+    }
+
+    public sealed class CacheSubscribedCallback : CallbackMsg
+    {
+        internal CacheSubscribedCallback(CMsgSOCacheSubscribed body)
+        {
+            Body = body;
+        }
+
+        public CMsgSOCacheSubscribed Body { get; }
+    }
+
     public sealed class CacheUnsubscribedCallback : CallbackMsg
     {
-        internal CacheUnsubscribedCallback(CMsgSOCacheUnsubscribed msg)
+        internal CacheUnsubscribedCallback(CSODOTALobby lobby)
         {
-            Msg = msg;
-        }
-
-        public CMsgSOCacheUnsubscribed Msg { get; }
-    }
-
-    public sealed class ConnectionStatusCallback : CallbackMsg
-    {
-        public CMsgConnectionStatus result;
-
-        internal ConnectionStatusCallback(CMsgConnectionStatus msg)
-        {
-            result = msg;
-        }
-    }
-
-    public sealed class PracticeLobbyLeaveCallback : CallbackMsg
-    {
-        internal PracticeLobbyLeaveCallback(CMsgSOCacheUnsubscribed msg, EMatchOutcome matchOutcome)
-        {
-            Msg = msg;
-            MatchOutcome = matchOutcome;
-        }
-
-        public CMsgSOCacheUnsubscribed Msg { get; }
-        public Guid MatchId { get; set; }
-        public EMatchOutcome MatchOutcome { get; }
-    }
-
-    public sealed class PracticeLobbySnapshotCallback : CallbackMsg
-    {
-        internal PracticeLobbySnapshotCallback(CSODOTALobby msg, CSODOTALobby? oldLob)
-        {
-            Lobby = msg;
-            OldLobby = oldLob;
+            Lobby = lobby;
         }
 
         public CSODOTALobby Lobby { get; }
+    }
+
+    public sealed class UpdateMultipleCallback : CallbackMsg
+    {
+        internal UpdateMultipleCallback(CSODOTALobby? oldLobby, CSODOTALobby lobby)
+        {
+            OldLobby = oldLobby;
+            Lobby = lobby;
+        }
+
         public CSODOTALobby? OldLobby { get; }
+        public CSODOTALobby Lobby { get; }
     }
 
-    public sealed class GCWelcomeCallback : CallbackMsg
+    public sealed class UnknownCallback : CallbackMsg
     {
-        public uint Version;
-
-        internal GCWelcomeCallback(CMsgClientWelcome msg)
+        internal UnknownCallback(IPacketGCMsg body)
         {
-            Version = msg.version;
-        }
-    }
-
-    public sealed class UnhandledDotaGCCallback : CallbackMsg
-    {
-        internal UnhandledDotaGCCallback(IPacketGCMsg msg)
-        {
-            Message = msg;
+            Body = body;
         }
 
-        public IPacketGCMsg Message { get; }
+        public IPacketGCMsg Body { get; }
     }
 }

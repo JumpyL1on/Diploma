@@ -15,11 +15,11 @@ builder.Services.AddServices();
 
 builder.Services.AddValidationServices();
 
-builder.Services.AddScoped(serviceProvider =>
+builder.Services.AddScoped(x =>
 {
     var httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7095/api/") };
 
-    return httpClient.EnableIntercept(serviceProvider);
+    return httpClient.EnableIntercept(x);
 });
 
 builder.Services.AddHttpClientInterceptor();

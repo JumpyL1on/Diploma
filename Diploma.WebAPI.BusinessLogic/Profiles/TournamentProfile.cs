@@ -8,6 +8,8 @@ public class TournamentProfile : Profile
 {
     public TournamentProfile()
     {
+        CreateMap<Tournament, TournamentDTO>();
+
         CreateMap<Tournament, TournamentDetailsDTO>()
             .ForMember(
                 x => x.Title,
@@ -27,9 +29,5 @@ public class TournamentProfile : Profile
             .ForMember(
                 x => x.IsRegistered,
                 x => x.Ignore());
-        
-        CreateMap<Tournament, TournamentDTO>();
-        
-        CreateMap<Tournament, CurrentTournamentDTO>();
     }
 }

@@ -21,13 +21,13 @@ public class ParticipantService : IParticipantService
             .Select(x => x.TeamId)
             .SingleOrDefaultAsync();
 
-        var participant = new Participant
+        var participant = new TeamTournament
         {
             TeamId = teamId,
             TournamentId = tournamentId
         };
 
-        _dbContext.Participants.Add(participant);
+        _dbContext.TeamTournaments.Add(participant);
 
         var tournament = await _dbContext.Tournaments
             .SingleAsync(tournament => tournament.Id == tournamentId);

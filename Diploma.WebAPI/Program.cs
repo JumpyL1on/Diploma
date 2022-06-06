@@ -3,7 +3,6 @@ using Diploma.WebAPI;
 using Diploma.WebAPI.BusinessLogic.Profiles;
 using Diploma.WebAPI.DataAccess;
 using Diploma.WebAPI.DataAccess.Entities;
-using Diploma.WebAPI.DataAccess.ValueObjects;
 using Diploma.WebAPI.Extensions;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -27,7 +26,7 @@ builder.Services.AddServices();
 
 builder.Services.AddValidationServices();
 
-var client = builder.Services.AddSteamGameClient();
+//var client = builder.Services.AddSteamGameClient();
 
 builder.Services
     .AddAuthentication(x =>
@@ -39,7 +38,7 @@ builder.Services
     })
     .AddJwtBearer(x =>
     {
-        var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+        var configuration = builder.Configuration;
 
         x.TokenValidationParameters = new TokenValidationParameters
         {
@@ -47,9 +46,10 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings.ValidIssuer,
-            ValidAudience = jwtSettings.ValidAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey))
+            ValidIssuer = configuration["Jwt:Issuer"],
+            ValidAudience = configuration["Jwt:Audience"],
+            ClockSkew = TimeSpan.Zero,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
         };
 
         x.MapInboundClaims = false;
@@ -57,9 +57,9 @@ builder.Services
     .AddCookie()
     .AddSteam(x => x.ApplicationKey = "2299E12A058C57E16AD5661BD11E5F84");
 
-builder.Services.AddControllers(x => x.Filters.Add(typeof(ExceptionFilter)));
-
 builder.Services.AddMvcCore();
+
+builder.Services.AddControllers(x => x.Filters.Add(typeof(ExceptionFilter)));
 
 builder.Services.AddEndpointsApiExplorer().AddSwaggerGen();
 
@@ -74,7 +74,7 @@ builder.Services.AddHangfireServer();
 
 var application = builder.Build();
 
-application.Lifetime.ApplicationStopped.Register(() => client.Dispose());
+//application.Lifetime.ApplicationStopped.Register(() => client.Dispose());
 
 if (application.Environment.IsDevelopment())
 {

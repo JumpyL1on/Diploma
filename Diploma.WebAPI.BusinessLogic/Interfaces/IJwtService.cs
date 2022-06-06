@@ -1,8 +1,8 @@
-﻿using System.Security.Claims;
+﻿using Diploma.WebAPI.DataAccess.Entities;
 
 namespace Diploma.WebAPI.BusinessLogic.Interfaces;
 
 public interface IJwtService
 {
-    public string GenerateAccessToken(List<Claim> claims);
+    public string GenerateAccessToken(User user);
 }

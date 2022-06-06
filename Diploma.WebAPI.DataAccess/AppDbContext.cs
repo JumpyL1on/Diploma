@@ -12,9 +12,9 @@ public class AppDbContext : IdentityUserContext<User, Guid>
     public DbSet<Match> Matches { get; set; }
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<OrganizationMember> OrganizationMembers { get; set; }
-    public DbSet<Participant> Participants { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<TeamMember> TeamMembers { get; set; }
+    public DbSet<TeamTournament> TeamTournaments { get; set; }
     public DbSet<Tournament> Tournaments { get; set; }
     public DbSet<UserGame> UserGames { get; set; }
 

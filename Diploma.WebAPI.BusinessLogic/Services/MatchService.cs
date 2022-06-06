@@ -16,11 +16,11 @@ public class MatchService : IMatchService
     private readonly IMapper _mapper;
     private readonly SteamGameClient _steamGameClient;
 
-    public MatchService(AppDbContext dbContext, IMapper mapper, SteamGameClient steamGameClient)
+    public MatchService(AppDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;
-        _steamGameClient = steamGameClient;
+        //_steamGameClient = steamGameClient;
     }
 
     public async Task<List<MatchDTO>> GetAllByTournamentId(Guid id)

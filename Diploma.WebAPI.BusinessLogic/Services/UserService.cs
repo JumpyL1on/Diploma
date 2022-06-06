@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Diploma.Common.Exceptions;
+﻿using Diploma.Common.Exceptions;
 using Diploma.Common.Requests;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.DataAccess.Entities;
@@ -9,14 +8,14 @@ namespace Diploma.WebAPI.BusinessLogic.Services;
 
 public class UserService : IUserService
 {
+    private readonly UserManager<User> _userManager;
+    private readonly IJwtService _jwtService;
+
     public UserService(UserManager<User> userManager, IJwtService jwtService)
     {
-        UserManager = userManager;
-        JWTService = jwtService;
+        _userManager = userManager;
+        _jwtService = jwtService;
     }
-
-    private UserManager<User> UserManager { get; }
-    private IJwtService JWTService { get; }
 
     public async Task SignUpUserAsync(SignUpUserRequest request)
     {
@@ -26,7 +25,7 @@ public class UserService : IUserService
             Email = request.Email
         };
 
-        var result = await UserManager.CreateAsync(user, request.Password);
+        var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
         {
@@ -40,19 +39,13 @@ public class UserService : IUserService
 
     public async Task<string> SignInUserAsync(SignInUserRequest request)
     {
-        var user = await UserManager.FindByEmailAsync(request.Email);
+        var user = await _userManager.FindByEmailAsync(request.Email);
 
-        if (!await UserManager.CheckPasswordAsync(user, request.Password))
+        if (!await _userManager.CheckPasswordAsync(user, request.Password))
         {
             throw new ValidationException("Неверное имя пользователя или пароль");
         }
 
-        var claims = new List<Claim>
-        {
-            new("Id", user.Id.ToString()),
-            new("Name", user.UserName)
-        };
-
-        return JWTService.GenerateAccessToken(claims);
+        return _jwtService.GenerateAccessToken(user);
     }
 }
