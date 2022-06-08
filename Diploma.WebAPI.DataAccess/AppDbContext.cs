@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Diploma.WebAPI.DataAccess.Entities;
+using Diploma.WebAPI.DataAccess.EntityConfigurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -29,14 +30,14 @@ public class AppDbContext : IdentityUserContext<User, Guid>
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         builder
-            .UseNpgsql("Host=localhost;Port=5432;Database=diploma;Username=postgres;Password=password")
-            .UseLoggerFactory(_loggerFactory);
+            .UseNpgsql("Host=localhost;Port=5432;Database=diploma;Username=postgres;Password=password");
+        //.UseLoggerFactory(_loggerFactory);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(GameConfiguration).Assembly);
     }
 }

@@ -46,26 +46,39 @@
     </MudStack>
     <MudTabs Centered="@true" Class="mt-6" Outlined="@true" Color="Color.Primary">
         <MudTabPanel Text="Обзор">
-            @if (_tournament.IsRegistered)
+            @if (_tournament.FinishedAt == null)
             {
-                <MudCard Class="d-flex justify-center mt-6">
-                    <MudCardContent>
-                        <MudText Typo="Typo.body1">
-                            Заявка вашей команды на регистрацию в турнире одобрена.
-                        </MudText>
-                    </MudCardContent>
-                </MudCard>
+                @if (_tournament.IsRegistered)
+                {
+                    <MudCard Class="d-flex justify-center mt-6">
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">
+                                Заявка вашей команды на регистрацию в турнире одобрена.
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                }
+                else
+                {
+                    <MudCard Class="d-flex justify-center mt-6">
+                        <MudCardActions>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OnClickAsync">
+                                <MudText Typo="Typo.body1">
+                                    Регистрация
+                                </MudText>
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                }
             }
             else
             {
                 <MudCard Class="d-flex justify-center mt-6">
-                    <MudCardActions>
-                        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OnClickAsync">
-                            <MudText Typo="Typo.body1">
-                                Регистрация
-                            </MudText>
-                        </MudButton>
-                    </MudCardActions>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1">
+                            Вы завершили участии в данном турнире
+                        </MudText>
+                    </MudCardContent>
                 </MudCard>
             }
         </MudTabPanel>

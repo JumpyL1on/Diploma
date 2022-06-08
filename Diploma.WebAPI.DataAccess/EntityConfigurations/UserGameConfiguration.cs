@@ -24,7 +24,7 @@ public class UserGameConfiguration : IEntityTypeConfiguration<UserGame>
             .HasForeignKey(x => x.UserId)
             .IsRequired();
 
-        builder.HasKey(x => new { x.UserId, SteamGameId = x.GameId });
+        builder.HasKey(x => new { x.UserId, x.GameId });
 
         builder
             .HasOne(x => x.Game)

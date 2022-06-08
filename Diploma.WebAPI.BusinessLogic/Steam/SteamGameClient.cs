@@ -9,6 +9,8 @@ namespace Diploma.WebAPI.BusinessLogic.Steam;
 public partial class SteamGameClient : ClientMsgHandler, IDisposable
 {
     public Guid MatchId { get; set; }
+    private List<ulong> LeftTeam { get; set; } = new();
+    private List<ulong> RightTeam { get; set; } = new();
 
     private readonly CallbackManager _callbackManager;
     private readonly SteamUser _steamUser;
@@ -60,7 +62,7 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         msg.Body.pass_key = passKey;
         msg.Body.lobby_details = details;
         msg.Body.lobby_details.pass_key = passKey;
-        msg.Body.lobby_details.visibility = DOTALobbyVisibility.DOTALobbyVisibility_Public;
+        msg.Body.lobby_details.visibility = DOTALobbyVisibility.DOTALobbyVisibility_Friends;
 
         if (string.IsNullOrWhiteSpace(msg.Body.search_key))
         {
@@ -70,9 +72,18 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         Send(msg);
     }
 
-    public void InviteToLobby(ulong steamId)
+    public void InviteToLobby(ulong steamId, bool isLeftTeam)
     {
         Console.WriteLine($"Inviting user with id {steamId}");
+
+        if (isLeftTeam)
+        {
+            LeftTeam.Add(steamId);
+        }
+        else
+        {
+            RightTeam.Add(steamId);
+        }
         
         var msg = new ClientGCMsgProtobuf<CMsgInviteToLobby>((uint)EGCBaseMsg.k_EMsgGCInviteToLobby);
         
@@ -81,12 +92,14 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         Send(msg);
     }
 
-    public void KickFromTeam(uint accountId)
+    private void KickFromTeam(ulong steamId)
     {
-        var kick = new ClientGCMsgProtobuf<CMsgPracticeLobbyKickFromTeam>(
+        var msg = new ClientGCMsgProtobuf<CMsgPracticeLobbyKickFromTeam>(
             (uint)EDOTAGCMsg.k_EMsgGCPracticeLobbyKickFromTeam);
-        kick.Body.account_id = accountId;
-        Send(kick);
+
+        msg.Body.account_id = (uint)(steamId - 76561197960265728);
+
+        Send(msg);
     }
 
     public void LaunchLobby()
@@ -111,21 +124,21 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
     {
         Console.WriteLine("Stop playing dota 2");
 
-        LeaveGame();
-
-        Thread.Sleep(1000);
-
         LeaveLobby();
-
+        
         Thread.Sleep(1000);
-
+        
+        LeaveGame();
+        
+        Thread.Sleep(1000);
+        
         var msg = new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed);
 
         Client.Send(msg);
 
-        Thread.Sleep(5000);
-
-        _steamUser.LogOff();
+        Thread.Sleep(3000);
+        
+        Client.Disconnect();
 
         while (_timer != null)
         {
@@ -239,6 +252,8 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         
         Client.Send(msg);
 
+        Thread.Sleep(1000);
+        
         var msgProtobuf = new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayedWithDataBlob);
         
         msgProtobuf.Body.games_played.Add(new CMsgClientGamesPlayed.GamePlayed
@@ -255,6 +270,8 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         
         Client.Send(msgProtobuf);
 
+        Thread.Sleep(1000);
+        
         SayHello();
 
         Thread.Sleep(5000);
@@ -284,6 +301,8 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
 
     private void SayHello()
     {
+        Console.WriteLine("Saying hello to game coordinator");
+        
         var msg = new ClientGCMsgProtobuf<CMsgClientHello>((uint)EGCBaseClientMsg.k_EMsgGCClientHello);
 
         msg.Body.client_launcher = PartnerAccountType.PARTNER_NONE;

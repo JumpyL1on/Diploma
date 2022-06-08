@@ -14,5 +14,5 @@ public class Match
     public Guid? RightTeamId { get; set; }
     public Team RightTeam { get; set; }
     public Guid TournamentId { get; set; }
-    public Tournament Tournament { get; set; }
+    public Tournament Tournament { get; set; } = null!;
 }

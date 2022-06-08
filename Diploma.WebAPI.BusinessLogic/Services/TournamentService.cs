@@ -119,6 +119,8 @@ public class TournamentService : ITournamentService
 
         var random = new Random();
 
+        var matches = new List<Match>();
+
         for (var i = 0; i < participantNumber / 2; i++)
         {
             var leftTeamId = GetRandomTeamId(teamIds, random);
@@ -136,16 +138,10 @@ public class TournamentService : ITournamentService
                 TournamentId = id
             };
 
-            _backgroundJobClient.Enqueue<IMatchService>(x => x.CreateAsync());
-
-            var matchId = match.Id;
-
-            _backgroundJobClient.Schedule<IMatchService>(
-                x => x.StartAsync(matchId),
-                TimeSpan.FromMinutes(2));
-
-            _dbContext.Matches.Add(match);
+            matches.Add(match);
         }
+
+        _dbContext.Matches.AddRange(matches);
 
         participantNumber /= 2;
         for (var i = 2; participantNumber != 1; participantNumber /= 2)
@@ -170,6 +166,11 @@ public class TournamentService : ITournamentService
         }
 
         await _dbContext.SaveChangesAsync();
+
+        foreach (var match in matches)
+        {
+            _backgroundJobClient.Enqueue<IMatchService>(x => x.CreateAsync(match.Id));
+        }
     }
 
     private static Guid GetRandomTeamId(IList<Guid> teamIds, Random random)

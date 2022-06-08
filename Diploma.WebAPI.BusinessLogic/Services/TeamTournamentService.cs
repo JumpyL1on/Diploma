@@ -5,29 +5,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diploma.WebAPI.BusinessLogic.Services;
 
-public class ParticipantService : IParticipantService
+public class TeamTournamentService : ITeamTournamentService
 {
     private readonly AppDbContext _dbContext;
 
-    public ParticipantService(AppDbContext dbContext)
+    public TeamTournamentService(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task CreateParticipantAsync(Guid tournamentId, Guid userId)
+    public async Task CreateAsync(Guid tournamentId, Guid userId)
     {
         var teamId = await _dbContext.TeamMembers
             .Where(x => x.UserId == userId)
             .Select(x => x.TeamId)
             .SingleOrDefaultAsync();
 
-        var participant = new TeamTournament
+        var teamTournament = new TeamTournament
         {
             TeamId = teamId,
             TournamentId = tournamentId
         };
 
-        _dbContext.TeamTournaments.Add(participant);
+        _dbContext.TeamTournaments.Add(teamTournament);
 
         var tournament = await _dbContext.Tournaments
             .SingleAsync(tournament => tournament.Id == tournamentId);

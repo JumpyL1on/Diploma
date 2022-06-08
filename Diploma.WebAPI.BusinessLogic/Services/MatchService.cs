@@ -5,6 +5,7 @@ using Diploma.Common.Exceptions;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.BusinessLogic.Steam;
 using Diploma.WebAPI.DataAccess;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using SteamKit2.GC.Dota.Internal;
 
@@ -15,12 +16,18 @@ public class MatchService : IMatchService
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly SteamGameClient _steamGameClient;
+    private readonly IBackgroundJobClient _backgroundJobClient;
 
-    public MatchService(AppDbContext dbContext, IMapper mapper)
+    public MatchService(
+        AppDbContext dbContext,
+        IMapper mapper,
+        SteamGameClient steamGameClient,
+        IBackgroundJobClient backgroundJobClient)
     {
         _dbContext = dbContext;
         _mapper = mapper;
-        //_steamGameClient = steamGameClient;
+        _steamGameClient = steamGameClient;
+        _backgroundJobClient = backgroundJobClient;
     }
 
     public async Task<List<MatchDTO>> GetAllByTournamentId(Guid id)
@@ -46,8 +53,10 @@ public class MatchService : IMatchService
         return match;
     }
 
-    public async Task CreateAsync()
+    public async Task CreateAsync(Guid id)
     {
+        _steamGameClient.MatchId = id;
+
         _steamGameClient.CreateLobby("password", new CMsgPracticeLobbySetDetails
         {
             game_mode = (uint)DOTA_GameMode.DOTA_GAMEMODE_AP,
@@ -57,12 +66,14 @@ public class MatchService : IMatchService
             allchat = true,
             game_version = DOTAGameVersion.GAME_VERSION_CURRENT,
         });
+
+        /*_backgroundJobClient.Schedule<IMatchService>(
+            x => x.StartAsync(id),
+            TimeSpan.FromMinutes(2));*/
     }
 
     public async Task StartAsync(Guid id)
     {
-        _steamGameClient.MatchId = id;
-
         _steamGameClient.LaunchLobby();
     }
 }

@@ -8,8 +8,12 @@ public class UserGameProfile : Profile
 {
     public UserGameProfile()
     {
-        CreateMap<UserGame, GameDTO>()
-            .ForMember(x => x.Nickname, x => x.MapFrom(y => y.Nickname))
-            .ForMember(x => x.Title, x => x.MapFrom(y => y.Game.Title));
+        CreateMap<UserGame, UserGameDTO>()
+            .ForMember(
+                dto => dto.Nickname,
+                cfg => cfg.MapFrom(y => y.Nickname))
+            .ForMember(
+                dto => dto.Title,
+                cfg => cfg.MapFrom(y => y.Game.Title));
     }
 }

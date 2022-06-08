@@ -8,7 +8,25 @@ public class TournamentProfile : Profile
 {
     public TournamentProfile()
     {
-        CreateMap<Tournament, TournamentDTO>();
+        CreateMap<Tournament, TournamentDTO>()
+            .ForMember(
+                dto => dto.Id,
+                cfg => cfg.MapFrom(tournament => tournament.Id))
+            .ForMember(
+                dto => dto.Title,
+                cfg => cfg.MapFrom(tournament => tournament.Title))
+            .ForMember(
+                dto => dto.Start,
+                cfg => cfg.MapFrom(tournament => tournament.Start))
+            .ForMember(
+                dto => dto.FinishedAt,
+                cfg => cfg.MapFrom(tournament => tournament.FinishedAt))
+            .ForMember(
+                dto => dto.ParticipantsNumber,
+                cfg => cfg.MapFrom(tournament => tournament.ParticipantsNumber))
+            .ForMember(
+                dto => dto.MaxParticipantsNumber,
+                cfg => cfg.MapFrom(tournament => tournament.MaxParticipantsNumber));
 
         CreateMap<Tournament, TournamentDetailsDTO>()
             .ForMember(
@@ -26,6 +44,9 @@ public class TournamentProfile : Profile
             .ForMember(
                 x => x.MaxParticipantsNumber,
                 x => x.MapFrom(y => y.MaxParticipantsNumber))
+            .ForMember(
+                dto => dto.FinishedAt,
+                cfg => cfg.MapFrom(tournament => tournament.FinishedAt))
             .ForMember(
                 x => x.IsRegistered,
                 x => x.Ignore());

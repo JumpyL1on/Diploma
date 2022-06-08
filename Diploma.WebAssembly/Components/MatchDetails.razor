@@ -25,7 +25,7 @@ else
         <MudGrid>
             <MudItem xs="2">
                 <MudStack AlignItems="AlignItems.Start">
-                    @foreach (var e in _match.ParticipantA.TeamMembers)
+                    @foreach (var teamMember in _match.LeftTeam.TeamMembers)
                     {
                         <MudStack Row="@true" AlignItems="AlignItems.Center">
                             <MudAvatar Size="Size.Large" Color="Color.Primary">
@@ -33,10 +33,10 @@ else
                             </MudAvatar>
                             <MudStack Spacing="0">
                                 <MudText Typo="Typo.body1">
-                                    @e.Nickname
+                                    @teamMember.Nickname
                                 </MudText>
                                 <MudText Typo="Typo.body1">
-                                    @e.Role
+                                    @teamMember.Role
                                 </MudText>
                             </MudStack>
                         </MudStack>
@@ -49,7 +49,7 @@ else
                         <MudIcon Icon="@Icons.Filled.People" Size="Size.Large"/>
                     </MudAvatar>
                     <MudText Typo="Typo.body1">
-                        @_match.ParticipantA.TeamTitle
+                        @_match.LeftTeam.Title
                     </MudText>
                 </MudStack>
             </MudItem>
@@ -58,17 +58,29 @@ else
                     <MudText Typo="Typo.body1">
                         Раунд @_match.Round
                     </MudText>
-                    <MudText Typo="Typo.body1">
-                        Матч состоится как можно скорее
-                    </MudText>
-                    <MudText Typo="Typo.h6">
-                        @_match.ParticipantAScore : @_match.ParticipantBScore
-                    </MudText>
-                    <MudButton Variant="Variant.Filled" OnClick="OnClickAsync">
+                    @if (_match.FinishedAt == null)
+                    {
                         <MudText Typo="Typo.body1">
-                            Присоединиться к игре
+                            Матч завершится как можно скорее
                         </MudText>
-                    </MudButton>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body1">
+                            Матч завершен, @_match.FinishedAt.Value.ToString("f")
+                        </MudText>
+                    }
+                    <MudText Typo="Typo.h6">
+                        @_match.LeftTeamScore : @_match.RightTeamScore
+                    </MudText>
+                    @if (_match.FinishedAt == null)
+                    {
+                        <MudButton Variant="Variant.Filled" OnClick="OnClickAsync">
+                            <MudText Typo="Typo.body1">
+                                Присоединиться к игре
+                            </MudText>
+                        </MudButton>
+                    }
                 </MudStack>
             </MudItem>
             <MudItem xs="2">
@@ -77,21 +89,21 @@ else
                         <MudIcon Icon="@Icons.Filled.People" Size="Size.Large"/>
                     </MudAvatar>
                     <MudText Typo="Typo.body1">
-                        @_match.ParticipantB.TeamTitle
+                        @_match.RightTeam.Title
                     </MudText>
                 </MudStack>
             </MudItem>
             <MudItem xs="2">
                 <MudStack AlignItems="AlignItems.End">
-                    @foreach (var e in _match.ParticipantB.TeamMembers)
+                    @foreach (var teamMember in _match.RightTeam.TeamMembers)
                     {
                         <MudStack Row="@true" AlignItems="AlignItems.Center">
                             <MudStack Spacing="0">
                                 <MudText Typo="Typo.body1">
-                                    @e.Nickname
+                                    @teamMember.Nickname
                                 </MudText>
                                 <MudText Typo="Typo.body1">
-                                    @e.Role
+                                    @teamMember.Role
                                 </MudText>
                             </MudStack>
                             <MudAvatar Size="Size.Large" Color="Color.Primary">

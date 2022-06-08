@@ -10,17 +10,17 @@ namespace Diploma.WebAPI.Controllers;
 [Authorize]
 public class ParticipantController : ControllerBase
 {
-    private readonly IParticipantService _participantService;
+    private readonly ITeamTournamentService _teamTournamentService;
 
-    public ParticipantController(IParticipantService participantService)
+    public ParticipantController(ITeamTournamentService teamTournamentService)
     {
-        _participantService = participantService;
+        _teamTournamentService = teamTournamentService;
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateParticipantAsync(Guid tournamentId)
     {
-        await _participantService.CreateParticipantAsync(tournamentId, this.GetUserId());
+        await _teamTournamentService.CreateAsync(tournamentId, this.GetUserId());
 
         return Ok();
     }

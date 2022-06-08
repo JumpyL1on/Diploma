@@ -1,5 +1,7 @@
 ﻿using System.Security.Cryptography;
+using Diploma.Common.DTOs;
 using Diploma.WebAPI.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using SteamKit2;
 using SteamKit2.GC.Dota.Internal;
 
@@ -20,6 +22,8 @@ public partial class SteamGameClient
     private void OnCacheSubscribed(CacheSubscribedCallback callback)
     {
         Console.WriteLine($"Cache was subscribed: {callback.Body.owner_soid.id}");
+        
+        MoveToPool();
     }
 
     private void OnCacheUnsubscribedCallback(CacheUnsubscribedCallback callback)
@@ -30,9 +34,11 @@ public partial class SteamGameClient
 
         using var dbContext = new AppDbContext();
 
-        var match = dbContext.Matches.Single(x => x.Id == MatchId);
-
-        match.FinishedAt = DateTime.UtcNow;
+        var match = dbContext.Matches
+            .Include(match => match.Tournament)
+            .Single(match => match.Id == MatchId);
+        
+        match.Tournament.FinishedAt = match.FinishedAt = DateTime.UtcNow;
 
         if (lobby.match_outcome == EMatchOutcome.k_EMatchOutcome_RadVictory)
         {
@@ -48,14 +54,20 @@ public partial class SteamGameClient
 
     private void OnUpdateMultiple(UpdateMultipleCallback callback)
     {
-        Console.WriteLine($"It was updated with {callback.Lobby.state}");
-        
-        if (callback.OldLobby == null)
+        Console.WriteLine($"It was updated with {callback.Lobby.state} {callback.Lobby.match_outcome}");
+
+        foreach (var e in callback.Lobby.all_members)
         {
-            MoveToPool();
+            switch (e.team)
+            {
+                case DOTA_GC_TEAM.DOTA_GC_TEAM_GOOD_GUYS when RightTeam.Contains(e.id):
+                case DOTA_GC_TEAM.DOTA_GC_TEAM_BAD_GUYS when LeftTeam.Contains(e.id):
+                    KickFromTeam(e.id);
+                    break;
+            }
         }
     }
-    
+
 
     private void OnUnknown(UnknownCallback callback)
     {

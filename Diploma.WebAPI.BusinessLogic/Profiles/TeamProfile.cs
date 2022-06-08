@@ -17,5 +17,21 @@ public class TeamProfile : Profile
             .ForMember(
                 x => x.GameTitle,
                 x => x.MapFrom(y => y.Game.Title));
+
+        CreateMap<Team, LeftTeamDTO>()
+            .ForMember(
+                dto => dto.Title,
+                cfg => cfg.MapFrom(team => team.Title))
+            .ForMember(
+                dto => dto.TeamMembers,
+                cfg => cfg.MapFrom(team => team.TeamMembers));
+        
+        CreateMap<Team, RightTeamDTO>()
+            .ForMember(
+                dto => dto.Title,
+                cfg => cfg.MapFrom(team => team.Title))
+            .ForMember(
+                dto => dto.TeamMembers,
+                cfg => cfg.MapFrom(team => team.TeamMembers));
     }
 }

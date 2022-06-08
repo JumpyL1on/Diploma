@@ -3,6 +3,5 @@
 public interface ITeamMemberService
 {
     public Task CreateAsync(Guid teamId, Guid userId);
-    public Task InviteToLobby(Guid userId);
     public Task DeleteAsync(Guid id, Guid userId);
 }

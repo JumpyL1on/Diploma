@@ -1,6 +1,7 @@
 using System.Text;
 using Diploma.WebAPI;
 using Diploma.WebAPI.BusinessLogic.Profiles;
+using Diploma.WebAPI.BusinessLogic.Steam;
 using Diploma.WebAPI.DataAccess;
 using Diploma.WebAPI.DataAccess.Entities;
 using Diploma.WebAPI.Extensions;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using SteamKit2;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +28,14 @@ builder.Services.AddServices();
 
 builder.Services.AddValidationServices();
 
-//var client = builder.Services.AddSteamGameClient();
+
+var steamClient = new SteamClient();
+
+steamClient.AddHandler(new SteamGameClient(steamClient));
+
+var steamGameClient = steamClient.GetHandler<SteamGameClient>();
+
+builder.Services.AddSingleton(steamGameClient!);
 
 builder.Services
     .AddAuthentication(x =>
@@ -74,7 +83,7 @@ builder.Services.AddHangfireServer();
 
 var application = builder.Build();
 
-//application.Lifetime.ApplicationStopped.Register(() => client.Dispose());
+application.Lifetime.ApplicationStopped.Register(() => steamGameClient.Dispose());
 
 if (application.Environment.IsDevelopment())
 {

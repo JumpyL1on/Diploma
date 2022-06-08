@@ -17,8 +17,14 @@ public class OrganizationMemberProfile : Profile
                 x => x.MapFrom(y => y.User.UserName));
 
         CreateMap<OrganizationMember, OrganizationDTO>()
-            .ForMember(x => x.Id, x => x.MapFrom(y => y.OrganizationId))
-            .ForMember(x => x.Role, x => x.MapFrom(y => y.Role))
-            .ForMember(x => x.Title, x => x.MapFrom(y => y.Organization.Title));
+            .ForMember(
+                dto => dto.Id,
+                x => x.MapFrom(organizationMember => organizationMember.OrganizationId))
+            .ForMember(
+                dto => dto.Role,
+                x => x.MapFrom(organizationMember => organizationMember.Role))
+            .ForMember(
+                dto => dto.Title,
+                cfg => cfg.MapFrom(organizationMember => organizationMember.Organization.Title));
     }
 }

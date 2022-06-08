@@ -11,12 +11,23 @@ public class TeamMemberProfile : Profile
         CreateMap<TeamMember, TeamMemberDTO>()
             .ForMember(
                 dto => dto.Nickname,
-                cfg => cfg.MapFrom(member => member.User.UserName));
+                cfg => cfg.MapFrom(teamMember => teamMember.User.UserName))
+            .ForMember(
+                dto => dto.Role,
+                cfg => cfg.MapFrom(teamMember => teamMember.Role));
 
         CreateMap<TeamMember, TeamDTO>()
-            .ForMember(x => x.Id, x => x.MapFrom(y => y.TeamId))
-            .ForMember(x => x.Role, x => x.MapFrom(y => y.Role))
-            .ForMember(x => x.Title, x => x.MapFrom(y => y.Team.Title))
-            .ForMember(x => x.GameTitle, x => x.MapFrom(y => y.Team.Game.Title));
+            .ForMember(
+                dto => dto.Id,
+                cfg => cfg.MapFrom(teamMember => teamMember.TeamId))
+            .ForMember(
+                dto => dto.Title,
+                cfg => cfg.MapFrom(teamMember => teamMember.Team.Title))
+            .ForMember(
+                dto => dto.GameTitle,
+                cfg => cfg.MapFrom(teamMember => teamMember.Team.Game.Title))
+            .ForMember(
+                dto => dto.Role,
+                cfg => cfg.MapFrom(teamMember => teamMember.Role));
     }
 }

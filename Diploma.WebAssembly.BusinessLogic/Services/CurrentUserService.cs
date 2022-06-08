@@ -23,9 +23,9 @@ public class CurrentUserService : ICurrentUserService
         return await _httpClient.GetFromJsonAsync<List<TeamDTO>>("users/current/teams") ?? new List<TeamDTO>();
     }
 
-    public async Task<List<GameDTO>> GetAllGamesAsync()
+    public async Task<List<UserGameDTO>> GetAllGamesAsync()
     {
-        return await _httpClient.GetFromJsonAsync<List<GameDTO>>("users/current/games") ?? new List<GameDTO>();
+        return await _httpClient.GetFromJsonAsync<List<UserGameDTO>>("users/current/games") ?? new List<UserGameDTO>();
     }
 
     public async Task<List<MatchDTO>> GetAllMatchesAsync()

@@ -9,15 +9,12 @@ namespace Diploma.WebAPI.BusinessLogic.Services;
 
 public class TeamMemberService : ITeamMemberService
 {
-    private readonly SteamGameClient _gameClient;
+    private readonly AppDbContext _appDbContext;
 
-    public TeamMemberService(AppDbContext appDbContext /*, SteamGameClient gameClient*/)
+    public TeamMemberService(AppDbContext appDbContext)
     {
-        AppDbContext = appDbContext;
-        //_gameClient = gameClient;
+        _appDbContext = appDbContext;
     }
-
-    private AppDbContext AppDbContext { get; }
 
     public async Task CreateAsync(Guid teamId, Guid userId)
     {
@@ -28,26 +25,16 @@ public class TeamMemberService : ITeamMemberService
             UserId = userId
         };
 
-        await AppDbContext.TeamMembers.AddAsync(teamMember);
+        await _appDbContext.TeamMembers.AddAsync(teamMember);
 
-        await AppDbContext.SaveChangesAsync();
+        await _appDbContext.SaveChangesAsync();
 
         //await UserManager<>.AddClaimAsync(request.AppUser, new Claim("Role", "Participant"));
     }
 
-    public async Task InviteToLobby(Guid userId)
-    {
-        var steamId = await AppDbContext.UserGames
-            .Where(x => x.UserId == userId)
-            .Select(x => x.SteamId)
-            .SingleOrDefaultAsync();
-
-        _gameClient.InviteToLobby(steamId);
-    }
-
     public async Task DeleteAsync(Guid id, Guid userId)
     {
-        var teamMember = await AppDbContext.TeamMembers
+        var teamMember = await _appDbContext.TeamMembers
             .SingleOrDefaultAsync(teamMember => teamMember.Id == id);
 
         if (teamMember == null)
@@ -55,8 +42,8 @@ public class TeamMemberService : ITeamMemberService
             throw new BusinessException("Участника команды не существует");
         }
 
-        AppDbContext.TeamMembers.Remove(teamMember);
+        _appDbContext.TeamMembers.Remove(teamMember);
 
-        await AppDbContext.SaveChangesAsync();
+        await _appDbContext.SaveChangesAsync();
     }
 }
