@@ -1,18 +1,18 @@
-﻿@page "/user/profile"
+﻿@page "/profile"
 <MudTabs Color="Color.Primary" Outlined="@true" Rounded="@true" Centered="@true">
     <MudTabPanel Text="Турниры">
-        <UserTournaments/>
+        <CurrentUserTournaments/>
     </MudTabPanel>
     <MudTabPanel Text="Команды">
-        <UserTeams/>
+        <CurrentUserTeams/>
     </MudTabPanel>
     <MudTabPanel Text="Игры">
-        <UserGames/>
+        <CurrentUserGames/>
     </MudTabPanel>
     <MudTabPanel Text="Матчи">
-        <UserMatches/>
+        <CurrentUserMatches/>
     </MudTabPanel>
     <MudTabPanel Text="Организации">
-        <UserOrganizations/>
+        <CurrentUserOrganizations/>
     </MudTabPanel>
 </MudTabs>

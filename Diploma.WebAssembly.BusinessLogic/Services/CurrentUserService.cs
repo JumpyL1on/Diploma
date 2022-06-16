@@ -39,8 +39,8 @@ public class CurrentUserService : ICurrentUserService
             .GetFromJsonAsync<List<OrganizationDTO>>("users/current/organizations") ?? new List<OrganizationDTO>();
     }
 
-    public async Task InviteToLobbyAsync()
+    public async Task InviteToLobbyAsync(Guid matchId)
     {
-        await _httpClient.PostAsync("users/current/invite-to-lobby", null);
+        await _httpClient.PostAsync($"users/current/matches/{matchId}/invite-to-lobby", null);
     }
 }

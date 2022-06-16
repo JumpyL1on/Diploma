@@ -2,15 +2,15 @@
 using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace Diploma.WebAssembly.Components;
+namespace Diploma.WebAssembly.Components.CurrentUser;
 
-public partial class UserGames
+public partial class CurrentUserTournaments
 {
     [Inject] public ICurrentUserService CurrentUserService { get; set; } = null!;
-    private List<UserGameDTO>? _games;
+    private List<TournamentDTO>? _tournaments;
 
     protected override async Task OnInitializedAsync()
     {
-        _games = await CurrentUserService.GetAllGamesAsync();
+        _tournaments = await CurrentUserService.GetAllTournamentsAsync();
     }
 }

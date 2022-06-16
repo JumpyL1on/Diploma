@@ -3,7 +3,7 @@ using Diploma.Common.Requests;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Diploma.WebAssembly.Pages;
+namespace Diploma.WebAssembly.Components.Profile;
 
 public partial class ConnectGame
 {

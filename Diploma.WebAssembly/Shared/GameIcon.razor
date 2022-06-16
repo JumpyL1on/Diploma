@@ -1,0 +1,9 @@
+﻿<MudStack Row="@true">
+    <MudIcon Icon="@Icons.Custom.Brands.Steam"/>
+    <MudText Typo="Typo.body1">@Title</MudText>
+</MudStack>
+@code
+{
+    [Parameter]
+    public string Title { get; set; } = null!;
+}

@@ -2,7 +2,7 @@
 using SteamKit2.GC;
 using SteamKit2.GC.Dota.Internal;
 
-namespace Diploma.WebAPI.BusinessLogic.Steam;
+namespace Diploma.WebAPI.BusinessLogic.SteamGameClient;
 
 public partial class SteamGameClient
 {
@@ -18,12 +18,12 @@ public partial class SteamGameClient
 
     public sealed class ClientConnectionStatusCallback : CallbackMsg
     {
-        public CMsgConnectionStatus Body;
-
         internal ClientConnectionStatusCallback(CMsgConnectionStatus body)
         {
             Body = body;
         }
+
+        public CMsgConnectionStatus Body { get; }
     }
 
     public sealed class CacheSubscribedCallback : CallbackMsg

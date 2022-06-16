@@ -8,12 +8,12 @@ public partial class TournamentDetails
 {
     [Parameter] public Guid Id { get; set; }
     [Inject] public ITournamentService TournamentService { get; set; } = null!;
-    [Inject] public IParticipantService ParticipantService { get; set; } = null!;
+    [Inject] public ITeamTournamentService TeamTournamentService { get; set; } = null!;
     private TournamentDetailsDTO? _tournament;
 
     private async Task OnClickAsync()
     {
-        await ParticipantService.CreateAsync(Id);
+        await TeamTournamentService.CreateAsync(Id);
 
         _tournament!.IsRegistered = true;
         

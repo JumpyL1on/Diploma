@@ -9,5 +9,5 @@ public interface ICurrentUserService
     public Task<List<UserGameDTO>> GetAllGamesAsync();
     public Task<List<MatchDTO>> GetAllMatchesAsync();
     public Task<List<OrganizationDTO>> GetAllOrganizationsAsync();
-    public Task InviteToLobbyAsync();
+    public Task InviteToLobbyAsync(Guid matchId);
 }

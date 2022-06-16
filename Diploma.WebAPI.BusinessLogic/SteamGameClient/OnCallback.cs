@@ -1,22 +1,21 @@
 ﻿using System.Security.Cryptography;
-using Diploma.Common.DTOs;
 using Diploma.WebAPI.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using SteamKit2;
 using SteamKit2.GC.Dota.Internal;
 
-namespace Diploma.WebAPI.BusinessLogic.Steam;
+namespace Diploma.WebAPI.BusinessLogic.SteamGameClient;
 
 public partial class SteamGameClient
 {
-    private void OnClientWelcome(ClientWelcomeCallback callback)
-    {
-        Console.WriteLine($"Client was welcomed with {callback.Body.version} version");
-    }
-
     private void OnClientConnectionStatus(ClientConnectionStatusCallback callback)
     {
         Console.WriteLine($"Client was connected with {callback.Body.status} status");
+    }
+
+    private void OnClientWelcome(ClientWelcomeCallback callback)
+    {
+        Console.WriteLine($"Client was welcomed with {callback.Body.version} version");
     }
 
     private void OnCacheSubscribed(CacheSubscribedCallback callback)
@@ -36,7 +35,7 @@ public partial class SteamGameClient
 
         var match = dbContext.Matches
             .Include(match => match.Tournament)
-            .Single(match => match.Id == MatchId);
+            .Single(match => match.Id == _matchId);
         
         match.Tournament.FinishedAt = match.FinishedAt = DateTime.UtcNow;
 
@@ -60,8 +59,8 @@ public partial class SteamGameClient
         {
             switch (e.team)
             {
-                case DOTA_GC_TEAM.DOTA_GC_TEAM_GOOD_GUYS when RightTeam.Contains(e.id):
-                case DOTA_GC_TEAM.DOTA_GC_TEAM_BAD_GUYS when LeftTeam.Contains(e.id):
+                case DOTA_GC_TEAM.DOTA_GC_TEAM_GOOD_GUYS when _rightTeam.Contains(e.id):
+                case DOTA_GC_TEAM.DOTA_GC_TEAM_BAD_GUYS when _leftTeam.Contains(e.id):
                     KickFromTeam(e.id);
                     break;
             }
@@ -97,6 +96,18 @@ public partial class SteamGameClient
         });
     }
 
+    private void OnDisconnected(SteamClient.DisconnectedCallback callback)
+    {
+        Console.WriteLine("Disconnected from Steam");
+
+        if (!File.Exists("sentry.bin"))
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(5));
+
+            Client.Connect();
+        }
+    }
+
     private void OnLoggedOn(SteamUser.LoggedOnCallback callback)
     {
         if (callback.Result == EResult.AccountLoginDeniedNeedTwoFactor)
@@ -118,23 +129,6 @@ public partial class SteamGameClient
         Console.WriteLine("Logged on on Steam");
 
         Launch();
-    }
-
-    private void OnDisconnected(SteamClient.DisconnectedCallback callback)
-    {
-        Console.WriteLine("Disconnected from Steam");
-
-        if (!File.Exists("sentry.bin"))
-        {
-            Thread.Sleep(TimeSpan.FromSeconds(5));
-
-            Client.Connect();
-        }
-        else
-        {
-            _timer?.Dispose();
-            _timer = null;
-        }
     }
 
     private void OnLoggedOff(SteamUser.LoggedOffCallback callback)

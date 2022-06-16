@@ -2,7 +2,6 @@
 using AutoMapper.QueryableExtensions;
 using Diploma.Common.DTOs;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
-using Diploma.WebAPI.BusinessLogic.Steam;
 using Diploma.WebAPI.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +11,9 @@ public class CurrentUserService : ICurrentUserService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
-    private readonly SteamGameClient _steamGameClient;
+    private readonly SteamGameClient.SteamGameClient _steamGameClient;
 
-    public CurrentUserService(AppDbContext dbContext, IMapper mapper, SteamGameClient steamGameClient)
+    public CurrentUserService(AppDbContext dbContext, IMapper mapper, SteamGameClient.SteamGameClient steamGameClient)
     {
         _dbContext = dbContext;
         _mapper = mapper;
@@ -64,10 +63,10 @@ public class CurrentUserService : ICurrentUserService
             .ToListAsync();
     }
 
-    public async Task InviteToLobbyAsync(Guid userId)
+    public async Task InviteToLobbyAsync(Guid matchId, Guid userId)
     {
         var isLeftTeam = await _dbContext.Matches
-            .Where(match => match.Id == _steamGameClient.MatchId)
+            .Where(match => match.Id == matchId)
             .AnyAsync(match => match.LeftTeam.TeamMembers.Any(member => member.UserId == userId));
 
         var steamId = await _dbContext.UserGames

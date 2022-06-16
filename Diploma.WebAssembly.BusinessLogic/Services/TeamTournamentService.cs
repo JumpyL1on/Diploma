@@ -2,11 +2,11 @@
 
 namespace Diploma.WebAssembly.BusinessLogic.Services;
 
-public class ParticipantService : IParticipantService
+public class TeamTournamentService : ITeamTournamentService
 {
     private readonly HttpClient _httpClient;
 
-    public ParticipantService(HttpClient httpClient)
+    public TeamTournamentService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }

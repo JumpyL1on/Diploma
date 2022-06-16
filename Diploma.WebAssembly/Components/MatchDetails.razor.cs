@@ -13,7 +13,7 @@ public partial class MatchDetails
 
     private async Task OnClickAsync()
     {
-        await CurrentUserService.InviteToLobbyAsync();
+        await CurrentUserService.InviteToLobbyAsync(Id);
     }
     
     protected override async Task OnInitializedAsync()

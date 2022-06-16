@@ -8,11 +8,11 @@ namespace Diploma.WebAPI.Controllers;
 [ApiController]
 [Route("api/tournaments/{tournamentId:guid}/participants")]
 [Authorize]
-public class ParticipantController : ControllerBase
+public class TeamTournamentController : ControllerBase
 {
     private readonly ITeamTournamentService _teamTournamentService;
 
-    public ParticipantController(ITeamTournamentService teamTournamentService)
+    public TeamTournamentController(ITeamTournamentService teamTournamentService)
     {
         _teamTournamentService = teamTournamentService;
     }

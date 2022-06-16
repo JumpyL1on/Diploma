@@ -2,7 +2,7 @@
 using Diploma.Common.Services;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
 using Diploma.WebAPI.BusinessLogic.Services;
-using Diploma.WebAPI.BusinessLogic.Steam;
+using Diploma.WebAPI.BusinessLogic.SteamGameClient;
 using SteamKit2;
 
 namespace Diploma.WebAPI.Extensions;

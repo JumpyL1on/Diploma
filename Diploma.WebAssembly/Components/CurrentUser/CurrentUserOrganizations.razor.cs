@@ -4,9 +4,9 @@ using Diploma.WebAssembly.Components.Dialogs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Diploma.WebAssembly.Components;
+namespace Diploma.WebAssembly.Components.CurrentUser;
 
-public partial class UserOrganizations
+public partial class CurrentUserOrganizations
 {
     [Inject] public ICurrentUserService CurrentUserService { get; set; }
     [Inject] public IDialogService DialogService { get; set; }

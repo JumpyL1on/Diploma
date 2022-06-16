@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICurrentUserService, CurrentUserService>()
             .AddScoped<IMatchService, MatchService>()
             .AddScoped<IOrganizationService, OrganizationService>()
-            .AddScoped<IParticipantService, ParticipantService>()
+            .AddScoped<ITeamTournamentService, TeamTournamentService>()
             .AddScoped<ITeamMemberService, TeamMemberService>()
             .AddScoped<ITeamService, TeamService>()
             .AddScoped<ITournamentService, TournamentService>()

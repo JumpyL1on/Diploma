@@ -3,9 +3,9 @@ using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Diploma.WebAssembly.Components;
+namespace Diploma.WebAssembly.Components.Authentication;
 
-public partial class SignInUser
+public partial class SignIn
 {
     [Inject] public IUserService UserService { get; set; }
     private readonly SignInUserRequest _request = new();

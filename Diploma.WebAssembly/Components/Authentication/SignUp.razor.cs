@@ -4,9 +4,9 @@ using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Diploma.WebAssembly.Components;
+namespace Diploma.WebAssembly.Components.Authentication;
 
-public partial class SignUpUser
+public partial class SignUp
 {
     private MudForm _mudForm = null!;
     private readonly SignUpUserRequest _request = new();

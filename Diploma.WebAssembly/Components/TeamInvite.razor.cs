@@ -1,7 +1,7 @@
 ﻿using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace Diploma.WebAssembly.Pages;
+namespace Diploma.WebAssembly.Components;
 
 public partial class TeamInvite
 {

@@ -4,42 +4,42 @@ using SteamKit2.GC;
 using SteamKit2.GC.Dota.Internal;
 using SteamKit2.Internal;
 
-namespace Diploma.WebAPI.BusinessLogic.Steam;
+namespace Diploma.WebAPI.BusinessLogic.SteamGameClient;
 
 public partial class SteamGameClient : ClientMsgHandler, IDisposable
 {
-    public Guid MatchId { get; set; }
-    private List<ulong> LeftTeam { get; set; } = new();
-    private List<ulong> RightTeam { get; set; } = new();
-
-    private readonly CallbackManager _callbackManager;
+    private Guid _matchId;
+    private readonly List<ulong> _leftTeam;
+    private readonly List<ulong> _rightTeam;
     private readonly SteamUser _steamUser;
-    
     private readonly uint _appId;
     private readonly ESourceEngine _engine;
     private CSODOTALobby? _lobby;
-
-    private Timer? _timer;
+    private readonly Timer _timer;
 
     public SteamGameClient(SteamClient steamClient)
     {
-        _callbackManager = new CallbackManager(steamClient);
+        _leftTeam = new List<ulong>();
         
-        _callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
-        _callbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
+        _rightTeam = new List<ulong>();
+        
+        var callbackManager = new CallbackManager(steamClient);
+        
+        callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
+        callbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
 
         _steamUser = steamClient.GetHandler<SteamUser>()!;
-        _callbackManager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
-        _callbackManager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
-        _callbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnUpdateMachineAuth);
-
-        _callbackManager.Subscribe<ClientWelcomeCallback>(OnClientWelcome);
-        _callbackManager.Subscribe<ClientConnectionStatusCallback>(OnClientConnectionStatus);
-        _callbackManager.Subscribe<CacheSubscribedCallback>(OnCacheSubscribed);
-        _callbackManager.Subscribe<CacheUnsubscribedCallback>(OnCacheUnsubscribedCallback);
-        _callbackManager.Subscribe<UpdateMultipleCallback>(OnUpdateMultiple);
-        _callbackManager.Subscribe<UnknownCallback>(OnUnknown);
         
+        callbackManager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
+        callbackManager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
+        callbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnUpdateMachineAuth);
+
+        callbackManager.Subscribe<ClientConnectionStatusCallback>(OnClientConnectionStatus);
+        callbackManager.Subscribe<ClientWelcomeCallback>(OnClientWelcome);
+        callbackManager.Subscribe<CacheSubscribedCallback>(OnCacheSubscribed);
+        callbackManager.Subscribe<UpdateMultipleCallback>(OnUpdateMultiple);
+        callbackManager.Subscribe<CacheUnsubscribedCallback>(OnCacheUnsubscribedCallback);
+        callbackManager.Subscribe<UnknownCallback>(OnUnknown);
 
         _engine = ESourceEngine.k_ESE_Source2;
         _appId = 570;
@@ -47,21 +47,21 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         steamClient.Connect();
 
         _timer = new Timer(
-            _ => _callbackManager.RunCallbacks(),
+            _ => callbackManager.RunCallbacks(),
             null,
             TimeSpan.Zero,
             TimeSpan.FromSeconds(1));
     }
 
-    public void CreateLobby(string passKey, CMsgPracticeLobbySetDetails details)
+    public void CreateLobby(Guid matchId, CMsgPracticeLobbySetDetails details)
     {
         Console.WriteLine($"Creating lobby {details.game_name}");
 
+        _matchId = matchId;
+        
         var msg = new ClientGCMsgProtobuf<CMsgPracticeLobbyCreate>((uint)EDOTAGCMsg.k_EMsgGCPracticeLobbyCreate);
-
-        msg.Body.pass_key = passKey;
+        
         msg.Body.lobby_details = details;
-        msg.Body.lobby_details.pass_key = passKey;
         msg.Body.lobby_details.visibility = DOTALobbyVisibility.DOTALobbyVisibility_Friends;
 
         if (string.IsNullOrWhiteSpace(msg.Body.search_key))
@@ -78,27 +78,17 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
 
         if (isLeftTeam)
         {
-            LeftTeam.Add(steamId);
+            _leftTeam.Add(steamId);
         }
         else
         {
-            RightTeam.Add(steamId);
+            _rightTeam.Add(steamId);
         }
         
         var msg = new ClientGCMsgProtobuf<CMsgInviteToLobby>((uint)EGCBaseMsg.k_EMsgGCInviteToLobby);
         
         msg.Body.steam_id = steamId;
         
-        Send(msg);
-    }
-
-    private void KickFromTeam(ulong steamId)
-    {
-        var msg = new ClientGCMsgProtobuf<CMsgPracticeLobbyKickFromTeam>(
-            (uint)EDOTAGCMsg.k_EMsgGCPracticeLobbyKickFromTeam);
-
-        msg.Body.account_id = (uint)(steamId - 76561197960265728);
-
         Send(msg);
     }
 
@@ -111,38 +101,29 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         Send(msg);
     }
 
-    public void LeaveGame()
-    {
-        Console.WriteLine("Abandon current game");
-        
-        var msg = new ClientGCMsgProtobuf<CMsgAbandonCurrentGame>((uint)EDOTAGCMsg.k_EMsgGCAbandonCurrentGame);
-        
-        Send(msg);
-    }
-
     public void Dispose()
     {
         Console.WriteLine("Stop playing dota 2");
 
         LeaveLobby();
-        
+
         Thread.Sleep(1000);
-        
+
         LeaveGame();
-        
+
         Thread.Sleep(1000);
-        
+
         var msg = new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed);
 
         Client.Send(msg);
 
-        Thread.Sleep(3000);
-        
+        Thread.Sleep(1000);
+
         Client.Disconnect();
 
-        while (_timer != null)
-        {
-        }
+        Thread.Sleep(5000);
+
+        _timer.Dispose();
     }
 
     public override void HandleMsg(IPacketMsg packetMsg)
@@ -251,7 +232,7 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         };
         
         Client.Send(msg);
-
+        
         Thread.Sleep(1000);
         
         var msgProtobuf = new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayedWithDataBlob);
@@ -269,12 +250,26 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         msgProtobuf.Body.client_os_type = (uint)EOSType.Windows10;
         
         Client.Send(msgProtobuf);
-
-        Thread.Sleep(1000);
         
-        SayHello();
+        Thread.Sleep(1000);
 
+        SayHello();
+        
         Thread.Sleep(5000);
+    }
+
+    private void SayHello()
+    {
+        Console.WriteLine("Saying hello to game coordinator");
+
+        var msg = new ClientGCMsgProtobuf<CMsgClientHello>((uint)EGCBaseClientMsg.k_EMsgGCClientHello);
+
+        msg.Body.client_launcher = PartnerAccountType.PARTNER_NONE;
+        msg.Body.engine = _engine;
+        msg.Body.secret_key = "";
+        msg.Body.client_session_need = (uint)EDOTAGCSessionNeed.k_EDOTAGCSessionNeed_UserInUINeverConnected;
+
+        Send(msg);
     }
 
     private void MoveToPool()
@@ -290,6 +285,16 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         Send(msg);
     }
     
+    private void KickFromTeam(ulong steamId)
+    {
+        var msg = new ClientGCMsgProtobuf<CMsgPracticeLobbyKickFromTeam>(
+            (uint)EDOTAGCMsg.k_EMsgGCPracticeLobbyKickFromTeam);
+
+        msg.Body.account_id = (uint)(steamId - 76561197960265728);
+
+        Send(msg);
+    }
+    
     private void LeaveLobby()
     {
         Console.WriteLine("Leaving lobby");
@@ -299,16 +304,11 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
         Send(msg);
     }
 
-    private void SayHello()
+    private void LeaveGame()
     {
-        Console.WriteLine("Saying hello to game coordinator");
-        
-        var msg = new ClientGCMsgProtobuf<CMsgClientHello>((uint)EGCBaseClientMsg.k_EMsgGCClientHello);
+        Console.WriteLine("Abandon current game");
 
-        msg.Body.client_launcher = PartnerAccountType.PARTNER_NONE;
-        msg.Body.engine = _engine;
-        msg.Body.secret_key = "";
-        msg.Body.client_session_need = (uint)EDOTAGCSessionNeed.k_EDOTAGCSessionNeed_UserInUINeverConnected;
+        var msg = new ClientGCMsgProtobuf<CMsgAbandonCurrentGame>((uint)EDOTAGCMsg.k_EMsgGCAbandonCurrentGame);
 
         Send(msg);
     }

@@ -1,7 +1,7 @@
 using System.Text;
 using Diploma.WebAPI;
 using Diploma.WebAPI.BusinessLogic.Profiles;
-using Diploma.WebAPI.BusinessLogic.Steam;
+using Diploma.WebAPI.BusinessLogic.SteamGameClient;
 using Diploma.WebAPI.DataAccess;
 using Diploma.WebAPI.DataAccess.Entities;
 using Diploma.WebAPI.Extensions;
@@ -28,14 +28,13 @@ builder.Services.AddServices();
 
 builder.Services.AddValidationServices();
 
-
 var steamClient = new SteamClient();
 
 steamClient.AddHandler(new SteamGameClient(steamClient));
 
 var steamGameClient = steamClient.GetHandler<SteamGameClient>();
 
-builder.Services.AddSingleton(steamGameClient!);
+builder.Services.AddSingleton(steamGameClient);
 
 builder.Services
     .AddAuthentication(x =>

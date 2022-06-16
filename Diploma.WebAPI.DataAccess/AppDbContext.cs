@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Diploma.WebAPI.DataAccess.Entities;
+﻿using Diploma.WebAPI.DataAccess.Entities;
 using Diploma.WebAPI.DataAccess.EntityConfigurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

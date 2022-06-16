@@ -1,9 +1,8 @@
-﻿namespace Diploma.Common.Exceptions
+﻿namespace Diploma.Common.Exceptions;
+
+public class AuthorizationException : Exception
 {
-    public class AuthorizationException : Exception
+    public AuthorizationException(string message) : base(message)
     {
-        public AuthorizationException(string message) : base(message)
-        {
-        }
     }
 }

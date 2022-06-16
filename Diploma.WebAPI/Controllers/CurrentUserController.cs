@@ -53,11 +53,11 @@ public class CurrentUserController : ControllerBase
     }
 
     [HttpPost]
-    [Route("invite-to-lobby")]
-    public async Task<IActionResult> InviteToLobbyAsync()
+    [Route("matches/{matchId:guid}/invite-to-lobby")]
+    public async Task<IActionResult> InviteToLobbyAsync(Guid matchId)
     {
-        await _currentUserService.InviteToLobbyAsync(this.GetUserId());
-        
+        await _currentUserService.InviteToLobbyAsync(matchId, this.GetUserId());
+
         return Ok();
     }
 }

@@ -2,47 +2,41 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Diploma.WebAPI
+namespace Diploma.WebAPI;
+
+public class ExceptionFilter : IExceptionFilter
 {
-    public class ExceptionFilter : IExceptionFilter
+    public void OnException(ExceptionContext context)
     {
-        public void OnException(ExceptionContext context)
+        switch (context.Exception)
         {
-            switch (context.Exception)
-            {
-                case AuthorizationException:
-                    HandleException(context, StatusCodes.Status403Forbidden);
+            case BusinessException:
+            case ValidationException:
+                HandleException(context, StatusCodes.Status400BadRequest);
 
-                    break;
-                case BusinessException:
-                case ValidationException:
-                    HandleException(context, StatusCodes.Status400BadRequest);
+                break;
+            case AuthorizationException:
+                HandleException(context, StatusCodes.Status403Forbidden);
 
-                    break;
-                case NotFoundException:
-                    HandleException(context, StatusCodes.Status404NotFound);
+                break;
+            case NotFoundException:
+                HandleException(context, StatusCodes.Status404NotFound);
 
-                    break;
-                default:
-                    context.HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    
-                    context.Result = new ContentResult
-                    {
-                        Content = context.Exception.Message
-                    };
-                    
-                    break;
-            }
+                break;
+            default:
+                HandleException(context, StatusCodes.Status500InternalServerError);
+
+                break;
         }
+    }
 
-        private void HandleException(ExceptionContext context, int status)
+    private static void HandleException(ExceptionContext context, int status)
+    {
+        context.Result = new ContentResult
         {
-            context.HttpContext.Response.StatusCode = status;
+            Content = context.Exception.Message
+        };
 
-            context.Result = new ContentResult
-            {
-                Content = context.Exception.Message
-            };
-        }
+        context.HttpContext.Response.StatusCode = status;
     }
 }

@@ -1,4 +1,4 @@
-﻿@page "/user/sign-in"
+﻿@page "/sign-in"
 @attribute [AllowAnonymous]
 <EditForm Model="@_request" OnValidSubmit="OnValidSubmitAsync">
     <MudCard Class="ma-auto" Style="width: 30%">
@@ -12,7 +12,7 @@
                 </MudItem>
                 <MudItem xs="12">
                     <MudText Align="Align.Center">
-                        Нет аккаунта? <MudLink Href="/user/sign-up">Зарегистрироваться здесь</MudLink>
+                        Нет аккаунта? <MudLink Href="/sign-up">Зарегистрироваться здесь</MudLink>
                     </MudText>
                 </MudItem>
                 <MudItem xs="12">

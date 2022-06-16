@@ -25,7 +25,7 @@ public class MatchController : ControllerBase
 
     [HttpGet]
     [Route("{id:guid}")]
-    public async Task<IActionResult> GetByIdAsync(Guid id)
+    public async Task<IActionResult> GetByIdAsync(Guid tournamentId, Guid id)
     {
         return Ok(await _matchService.GetById(id, this.GetUserId()));
     }

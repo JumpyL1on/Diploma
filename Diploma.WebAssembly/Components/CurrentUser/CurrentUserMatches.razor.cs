@@ -2,9 +2,9 @@
 using Diploma.WebAssembly.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace Diploma.WebAssembly.Components;
+namespace Diploma.WebAssembly.Components.CurrentUser;
 
-public partial class UserMatches
+public partial class CurrentUserMatches
 {
     [Inject] private ICurrentUserService CurrentUserService { get; set; } = null!;
     private List<MatchDTO>? _matches;

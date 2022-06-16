@@ -3,7 +3,6 @@ using AutoMapper.QueryableExtensions;
 using Diploma.Common.DTOs;
 using Diploma.Common.Exceptions;
 using Diploma.WebAPI.BusinessLogic.Interfaces;
-using Diploma.WebAPI.BusinessLogic.Steam;
 using Diploma.WebAPI.DataAccess;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +14,13 @@ public class MatchService : IMatchService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
-    private readonly SteamGameClient _steamGameClient;
+    private readonly SteamGameClient.SteamGameClient _steamGameClient;
     private readonly IBackgroundJobClient _backgroundJobClient;
 
     public MatchService(
         AppDbContext dbContext,
         IMapper mapper,
-        SteamGameClient steamGameClient,
+        SteamGameClient.SteamGameClient steamGameClient,
         IBackgroundJobClient backgroundJobClient)
     {
         _dbContext = dbContext;
@@ -55,9 +54,7 @@ public class MatchService : IMatchService
 
     public async Task CreateAsync(Guid id)
     {
-        _steamGameClient.MatchId = id;
-
-        _steamGameClient.CreateLobby("password", new CMsgPracticeLobbySetDetails
+        _steamGameClient.CreateLobby(id, new CMsgPracticeLobbySetDetails
         {
             game_mode = (uint)DOTA_GameMode.DOTA_GAMEMODE_AP,
             game_name = "STEAMKIT2.DOTA.LOBBY",
@@ -65,11 +62,12 @@ public class MatchService : IMatchService
             allow_cheats = true,
             allchat = true,
             game_version = DOTAGameVersion.GAME_VERSION_CURRENT,
+            visibility = DOTALobbyVisibility.DOTALobbyVisibility_Friends
         });
 
-        /*_backgroundJobClient.Schedule<IMatchService>(
+        _backgroundJobClient.Schedule<IMatchService>(
             x => x.StartAsync(id),
-            TimeSpan.FromMinutes(2));*/
+            TimeSpan.FromMinutes(2));
     }
 
     public async Task StartAsync(Guid id)
