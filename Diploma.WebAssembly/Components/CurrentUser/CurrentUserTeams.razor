@@ -45,16 +45,16 @@
             </MudTd>
             <MudTd>5</MudTd>
             <MudTd>@context.Role</MudTd>
-            <MudTd>
+            <MudTd Class="d-flex justify-end">
                 @if (context.Role == "Капитан")
                 {
-                    <MudButton Variant="Variant.Filled">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">
                         <MudText Typo="Typo.body1">Удалить команду</MudText>
                     </MudButton>
                 }
                 @if (context.Role == "Игрок")
                 {
-                    <MudButton Variant="Variant.Filled">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">
                         <MudText Typo="Typo.body1">Покинуть состав</MudText>
                     </MudButton>
                 }

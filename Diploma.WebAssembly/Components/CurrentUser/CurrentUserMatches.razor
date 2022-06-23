@@ -27,45 +27,113 @@ else
     }
     else
     {
-        <MudTable T="MatchDTO" Items="_matches" Class="mt-6">
-            <HeaderContent>
-                <MudTh>
-                    <MudText Typo="Typo.body1">
-                        Дата
-                    </MudText>
-                </MudTh>
-                <MudTh>
-                    <MudText Typo="Typo.body1">
-                        Матч
-                    </MudText>
-                </MudTh>
-                <MudTh/>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTh>
-                    <MudText Typo="Typo.body1">
-                        @context.Start.ToLocalTime().ToString("f")
-                    </MudText>
-                </MudTh>
-                <MudTd>
-                    <MudStack Row="@true">
-                        <MudText Typo="Typo.body1">
-                            @context.LeftTeamTitle
-                        </MudText>
-                        <MudText Typo="Typo.body1">
-                            @context.LeftTeamScore : @context.RightTeamScore
-                        </MudText>
-                        <MudText Typo="Typo.body1">
-                            @context.RightTeamTitle
-                        </MudText>
-                    </MudStack>
-                </MudTd>
-                <MudTd Class="d-flex justify-end">
-                    <MudLink Href="@($"/match/{context.Id}")">
-                        Подробнее
-                    </MudLink>
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
+        <MudTabs Centered="@true" Outlined="@true" Color="@Color.Primary" Class="mt-6">
+            <MudTabPanel Text="Текущие">
+                <MudTable T="MatchDTO" Items="@(_matches.Where(x => x.FinishedAt == null))" Class="mt-6">
+                    <HeaderContent>
+                        <MudTh>
+                            <MudText Typo="Typo.body1">
+                                Дата
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText Typo="Typo.body1">
+                                Турнир
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText Typo="Typo.body1">
+                                Матч
+                            </MudText>
+                        </MudTh>
+                        <MudTh/>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <MudText Typo="Typo.body1">
+                                @context.Start.ToLocalTime().ToString("f")
+                            </MudText>
+                        </MudTd>
+                        <MudTd>
+                            <MudStack>
+                                <MudLink Href="@($"/tournament/{context.TournamentId}")">@context.TournamentTitle</MudLink>
+                                <GameIcon Title="DOTA 2"></GameIcon>
+                            </MudStack>
+                        </MudTd>
+                        <MudTd>
+                            <MudStack Row="@true">
+                                <MudText Typo="Typo.body1">
+                                    @context.LeftTeamTitle
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    @context.LeftTeamScore : @context.RightTeamScore
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    @context.RightTeamTitle
+                                </MudText>
+                            </MudStack>
+                        </MudTd>
+                        <MudTd Class="d-flex justify-end">
+                            <MudLink Href="@($"/match/{context.Id}")">
+                                Подробнее
+                            </MudLink>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+            <MudTabPanel Text="Завершенные">
+                <MudTable T="MatchDTO" Items="@(_matches.Where(x => x.FinishedAt != null))" Class="mt-6">
+                    <HeaderContent>
+                        <MudTh>
+                            <MudText Typo="Typo.body1">
+                                Дата
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText Typo="Typo.body1">
+                                Турнир
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText Typo="Typo.body1">
+                                Матч
+                            </MudText>
+                        </MudTh>
+                        <MudTh/>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <MudText Typo="Typo.body1">
+                                @context.Start.ToLocalTime().ToString("f")
+                            </MudText>
+                        </MudTd>
+                        <MudTd>
+                            <MudStack>
+                                <MudLink Href="@($"/tournament/{context.TournamentId}")">@context.TournamentTitle</MudLink>
+                                <GameIcon Title="DOTA 2"></GameIcon>
+                            </MudStack>
+                        </MudTd>
+                        <MudTd>
+                            <MudStack Row="@true">
+                                <MudText Typo="Typo.body1">
+                                    @context.LeftTeamTitle
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    @context.LeftTeamScore : @context.RightTeamScore
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    @context.RightTeamTitle
+                                </MudText>
+                            </MudStack>
+                        </MudTd>
+                        <MudTd>
+                            <MudLink Href="@($"/match/{context.Id}")">
+                                Подробнее
+                            </MudLink>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+        </MudTabs>
     }
 }

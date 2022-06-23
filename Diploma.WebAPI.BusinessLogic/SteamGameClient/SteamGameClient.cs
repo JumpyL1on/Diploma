@@ -17,6 +17,8 @@ public partial class SteamGameClient : ClientMsgHandler, IDisposable
     private CSODOTALobby? _lobby;
     private readonly Timer _timer;
 
+    public SteamGameClient(){}
+    
     public SteamGameClient(SteamClient steamClient)
     {
         _leftTeam = new List<ulong>();

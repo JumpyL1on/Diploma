@@ -9,7 +9,7 @@ else
         <MudText Typo="Typo.h4">
             Матч
         </MudText>
-        <MudLink Href="@($"/tournament/{_match.TournamentId}")"Class="mt-2">
+        <MudLink Href="@($"/tournament/{_match.TournamentId}")" Class="mt-2">
             <MudText Typo="Typo.body1">
                 Перейти к турниру
             </MudText>
@@ -67,7 +67,7 @@ else
                     else
                     {
                         <MudText Typo="Typo.body1">
-                            Матч завершен, @_match.FinishedAt.Value.ToString("f")
+                            Матч завершен, @_match.FinishedAt.Value.ToLocalTime().ToString("f")
                         </MudText>
                     }
                     <MudText Typo="Typo.h6">

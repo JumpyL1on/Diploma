@@ -27,46 +27,16 @@ else
     }
     else
     {
-        <MudTable T="TournamentDTO" Items="_tournaments" Class="mt-6">
-            <HeaderContent>
-                <MudTh>Турнир</MudTh>
-                <MudTh>Начало</MudTh>
-                <MudTh>Формат проведения</MudTh>
-                <MudTh>Формат участия</MudTh>
-                <MudTh>Участники</MudTh>
-                <MudTh>Статус</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd>
-                    <MudLink Href="@($"/tournament/{context.Id}")">@context.Title</MudLink>
-                </MudTd>
-                <MudTd>@context.Start.ToLocalTime()</MudTd>
-                <MudTd>Single Elimination</MudTd>
-                <MudTd>5x5</MudTd>
-                <MudTd>@($"{context.ParticipantsNumber}/{context.MaxParticipantsNumber}")</MudTd>
-                @if (DateTime.UtcNow < context.Start)
-                {
-                    <MudTd>
-                        До окончания регистрации @((context.Start - DateTime.UtcNow).ToString("g"))
-                    </MudTd>
-                }
-                else if (context.FinishedAt == null)
-                {
-                    <MudTd>
-                        <MudText Typo="Typo.body1">
-                            Завершится как можно скорее
-                        </MudText>
-                    </MudTd>
-                }
-                else
-                {
-                    <MudTd>
-                        <MudText Typo="Typo.body1">
-                            Завершен
-                        </MudText>
-                    </MudTd>
-                }
-            </RowTemplate>
-        </MudTable>
+        <MudTabs Centered="@true" Outlined="@true" Color="@Color.Primary" Class="mt-6">
+            <MudTabPanel Text="Предстоящие">
+                <Tournaments Status="upcoming"/>
+            </MudTabPanel>
+            <MudTabPanel Text="Текущие">
+                <Tournaments Status="current"/>
+            </MudTabPanel>
+            <MudTabPanel Text="Завершенные">
+                <Tournaments Status="finished"/>
+            </MudTabPanel>
+        </MudTabs>
     }
 }

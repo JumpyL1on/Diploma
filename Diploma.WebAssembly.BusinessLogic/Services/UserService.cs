@@ -26,7 +26,7 @@ public class UserService : IUserService
 
         if (response.IsSuccessStatusCode)
         {
-            _navManager.NavigateTo("user/sign-in");
+            _navManager.NavigateTo("sign-in");
         }
     }
 

@@ -41,13 +41,13 @@
             <MudTd Class="d-flex justify-end">
                 @if (context.Role == "Владелец")
                 {
-                    <MudButton Variant="Variant.Filled">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">
                         <MudText Typo="Typo.body1">Удалить организацию</MudText>
                     </MudButton>
                 }
                 @if (context.Role == "Судья")
                 {
-                    <MudButton Variant="Variant.Filled">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">
                         <MudText Typo="Typo.body1">Покинуть организацию</MudText>
                     </MudButton>
                 }

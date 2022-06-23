@@ -51,6 +51,7 @@ public class CurrentUserService : ICurrentUserService
         return await _dbContext.Matches
             .Where(match => match.LeftTeam.TeamMembers.Any(teamMember => teamMember.UserId == userId) ||
                             match.RightTeam.TeamMembers.Any(teamMember => teamMember.UserId == userId))
+            .OrderByDescending(match => match.Start)
             .ProjectTo<MatchDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
     }

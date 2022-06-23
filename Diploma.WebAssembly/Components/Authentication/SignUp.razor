@@ -36,7 +36,8 @@
                                   Validation="@((string repeatedPassword) => UserValidationService.ValidateRepeatedPassword(_request.Password, repeatedPassword))"/>
                 </MudItem>
                 <MudItem xs="12" Class="d-flex justify-center">
-                    <MudButton Variant="Variant.Filled" OnClick="OnClickAsync">
+                    <MudButton Variant="Variant.Filled" OnClick="OnClickAsync"
+                               FullWidth="@true" Color="Color.Primary">
                         Зарегистрироваться
                     </MudButton>
                 </MudItem>

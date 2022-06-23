@@ -88,8 +88,8 @@ public partial class SteamGameClient
 
         _steamUser.LogOn(new SteamUser.LogOnDetails
         {
-            Username = "jumpyl1on",
-            Password = "064jGUi#%2",
+            Username = "username",
+            Password = "password",
             AuthCode = null,
             TwoFactorCode = null,
             SentryFileHash = sentryHash,

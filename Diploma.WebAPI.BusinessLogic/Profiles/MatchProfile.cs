@@ -16,6 +16,9 @@ public class MatchProfile : Profile
                 dto => dto.Start,
                 cfg => cfg.MapFrom(match => match.Start))
             .ForMember(
+                dto => dto.FinishedAt,
+                cfg => cfg.MapFrom(match => match.FinishedAt))
+            .ForMember(
                 dto => dto.Round,
                 cfg => cfg.MapFrom(match => match.Round))
             .ForMember(
@@ -32,7 +35,13 @@ public class MatchProfile : Profile
                 cfg => cfg.MapFrom(match => match.LeftTeam.Title))
             .ForMember(
                 dto => dto.RightTeamTitle,
-                cfg => cfg.MapFrom(match => match.RightTeam.Title));
+                cfg => cfg.MapFrom(match => match.RightTeam.Title))
+            .ForMember(
+                dto => dto.TournamentId,
+                cfg => cfg.MapFrom(match => match.TournamentId))
+            .ForMember(
+                dto => dto.TournamentTitle,
+                cfg => cfg.MapFrom(match => match.Tournament.Title));
 
         CreateMap<Match, MatchDetailsDTO>()
             .ForMember(

@@ -1,37 +1,60 @@
 ﻿@using Diploma.Common.DTOs
-<MudTable Items="_tournaments" Loading="@(_tournaments == null)" T="TournamentDTO" Class="mt-6">
-    <HeaderContent>
-        <MudTh>Турнир</MudTh>
-        <MudTh>Начало</MudTh>
-        <MudTh>Формат проведения</MudTh>
-        <MudTh>Формат участия</MudTh>
-        <MudTh>Участники</MudTh>
-        <MudTh>Статус</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd>
-            <MudLink Href="@($"/tournament/{context.Id}")">@context.Title</MudLink>
-        </MudTd>
-        <MudTd>@context.Start.ToLocalTime()</MudTd>
-        <MudTd>Single Elimination</MudTd>
-        <MudTd>5x5</MudTd>
-        <MudTd>@($"{context.ParticipantsNumber}/{context.MaxParticipantsNumber}")</MudTd>
-        @switch (Status)
-        {
-            case "upcoming":
-                <MudTd>
-                    <MudText Typo="Typo.body1">
-                        До окончания регистрации @((context.Start - DateTime.UtcNow).ToString("g"))
-                    </MudText>
-                </MudTd>
-                break;
-            case "current":
-                <MudTd>
-                    <MudText Typo="Typo.body1">
-                        Закончится как можно скорее
-                    </MudText>
-                </MudTd>
-                break;
-        }
-    </RowTemplate>
-</MudTable>
+@if (_tournaments == null)
+{
+    <Loading/>
+}
+else if (_tournaments.Count == 0)
+{
+    <MudText Typo="Typo.body1" Class="mt-6 d-flex justify-center">
+        По установленным фильтрам пока нет турниров
+    </MudText>
+}
+else
+{
+    <MudTable Items="_tournaments" Loading="@(_tournaments == null)" T="TournamentDTO" Class="mt-6">
+        <HeaderContent>
+            <MudTh>Турнир</MudTh>
+            <MudTh>Начало</MudTh>
+            <MudTh>Формат проведения</MudTh>
+            <MudTh>Формат участия</MudTh>
+            <MudTh>Участники</MudTh>
+            <MudTh>Статус</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudStack>
+                    <MudLink Href="@($"/tournament/{context.Id}")">@context.Title</MudLink>
+                    <GameIcon Title="DOTA 2"></GameIcon>
+                </MudStack>
+            </MudTd>
+            <MudTd>@context.Start.ToLocalTime()</MudTd>
+            <MudTd>Single Elimination</MudTd>
+            <MudTd>5x5</MudTd>
+            <MudTd>@($"{context.ParticipantsNumber}/{context.MaxParticipantsNumber}")</MudTd>
+            @switch (Status)
+            {
+                case "upcoming":
+                    <MudTd>
+                        <MudText Typo="Typo.body1">
+                            До окончания регистрации @((context.Start - DateTime.UtcNow).ToString("g"))
+                        </MudText>
+                    </MudTd>
+                    break;
+                case "current":
+                    <MudTd>
+                        <MudText Typo="Typo.body1">
+                            Закончится как можно скорее
+                        </MudText>
+                    </MudTd>
+                    break;
+                case "finished":
+                    <MudTd>
+                        <MudText Typo="Typo.body1">
+                            Завершен
+                        </MudText>
+                    </MudTd>
+                    break;
+            }
+        </RowTemplate>
+    </MudTable>
+}

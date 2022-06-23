@@ -30,7 +30,7 @@ builder.Services.AddValidationServices();
 
 var steamClient = new SteamClient();
 
-steamClient.AddHandler(new SteamGameClient(steamClient));
+steamClient.AddHandler(new SteamGameClient());
 
 var steamGameClient = steamClient.GetHandler<SteamGameClient>();
 
@@ -63,7 +63,7 @@ builder.Services
         x.MapInboundClaims = false;
     })
     .AddCookie()
-    .AddSteam(x => x.ApplicationKey = "2299E12A058C57E16AD5661BD11E5F84");
+    .AddSteam(x => x.ApplicationKey = "key");
 
 builder.Services.AddMvcCore();
 
@@ -82,7 +82,7 @@ builder.Services.AddHangfireServer();
 
 var application = builder.Build();
 
-application.Lifetime.ApplicationStopped.Register(() => steamGameClient.Dispose());
+// application.Lifetime.ApplicationStopped.Register(() => steamGameClient.Dispose());
 
 if (application.Environment.IsDevelopment())
 {
